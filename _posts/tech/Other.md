@@ -1,7 +1,7 @@
 ---
 layout: post
 title: OtherMD  
-category: 其他
+category: 技术
 tags: Other
 description: 本篇旨在测试文件夹
 ---
