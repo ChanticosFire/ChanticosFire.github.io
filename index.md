@@ -3,13 +3,14 @@ title: Why Blog
 layout: post
 ---
 
-## 关于我
+## 关于我 
+<script src="https://tryhackme.com/badge/1980359"></script>
 
 射箭运动员，业余无线电爱好者（目前A证），军宅，技术型Nerrrrd
 
 施工中，目前原生内容较少，还没有从本地把文档逐渐搬上来。
 
-<script src="https://tryhackme.com/badge/1980359"></script>
+
 
 ## 对博客的理解
 
