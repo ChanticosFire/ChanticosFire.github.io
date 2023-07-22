@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Linux引导出现Bluetooth: hci0: Malformed MSFT vendor event: 0x02故障的解决方案及wayland配置
+title: Linux引导出现Bluetoot报错
 category: 技术
 tags: Linux
 keywords: Linux
