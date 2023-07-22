@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Linux引导出现Bluetoot报错
+title: Linux引导出现Bluetooth报错
 category: 技术
 tags: Linux
 keywords: Linux
