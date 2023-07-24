@@ -36,19 +36,19 @@ reboot
     sudo apt-get install xorg
     sudo dpkg-reconfigure xfce4
 经过如上操作之后，我突然意识到我还需要使用X11+XFCE
-    #查看是否安装了X11
+    `#查看是否安装了X11
     sudo dpkg -l |grep xserver-xorg
-    #如果输出包含xserver-xorg，那么代表安装了X11
+    #如果输出包含xserver-xorg，那么代表安装了X11`
 	
 确认当前系统已安装X11后，执行`reboot`重新引导
 
 
 好事不会那么容易发生，重新启动后tty1仍然卡在报错，再次切到tty2尝试排障。
 如果使用xfce4的话，默认的显示管理器可能是LightDM，我决定再次确认一下
-    echo $DESKTOP_SESSION
+    `echo $DESKTOP_SESSION`
 然而此命令输出了plasma，这代表我使用的不是LightDM而是之前安装KDE的时候切换的SDDM，那么接下来就应该安装并切换到LightDM。
-    sudo apt-get install lightdm
-    dpkg-reconfigure lightdm
+    `sudo apt-get install lightdm
+    dpkg-reconfigure lightdm`
 在弹框中选择LightDM作为默认的显示管理器，然后`reboot`重启生效。
 
 神奇的事情发生了，从SDDM切换到LightDM之后，故障消失了，并且我可以在登录的时候选择plasmawayland作为桌面环境，是KDE Plasma桌面环境在Wayland显示服务器下的实现，多次重启后无故障复现，蓝牙正常使用。
