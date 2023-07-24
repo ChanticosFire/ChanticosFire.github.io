@@ -36,6 +36,7 @@ reboot
     sudo apt-get install xorg
     sudo dpkg-reconfigure xfce4
 经过如上操作之后，我突然意识到我还需要使用X11+XFCE
+
     `#查看是否安装了X11
     sudo dpkg -l |grep xserver-xorg
     #如果输出包含xserver-xorg，那么代表安装了X11`
@@ -45,8 +46,10 @@ reboot
 
 好事不会那么容易发生，重新启动后tty1仍然卡在报错，再次切到tty2尝试排障。
 如果使用xfce4的话，默认的显示管理器可能是LightDM，我决定再次确认一下
+
     `echo $DESKTOP_SESSION`
 然而此命令输出了plasma，这代表我使用的不是LightDM而是之前安装KDE的时候切换的SDDM，那么接下来就应该安装并切换到LightDM。
+
     `sudo apt-get install lightdm
     dpkg-reconfigure lightdm`
 在弹框中选择LightDM作为默认的显示管理器，然后`reboot`重启生效。
