@@ -37,9 +37,9 @@ reboot
     sudo dpkg-reconfigure xfce4
 经过如上操作之后，我突然意识到我还需要使用X11+XFCE
 
-    `#查看是否安装了X11
+    #查看是否安装了X11
     sudo dpkg -l |grep xserver-xorg
-    #如果输出包含xserver-xorg，那么代表安装了X11`
+    #如果输出包含xserver-xorg，那么代表安装了X11
 	
 确认当前系统已安装X11后，执行`reboot`重新引导
 
