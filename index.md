@@ -10,7 +10,10 @@ layout: post
 
 施工中，目前原生内容较少，还没有从本地把文档逐渐搬上来。
 
+## 我的其他站点
+[Linux命令搜索引擎](https://linux.15926.tech)   
 
+[开发人员的备忘速查Quick Reference](https://ref.15926.tech)
 
 ## 关于此站
 
