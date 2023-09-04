@@ -12,8 +12,8 @@ layout: post
 
 ## 我的其他站点
 [Linux命令搜索引擎](https://linux.15926.tech)   
-
-[开发人员的备忘速查Quick Reference](https://ref.15926.tech)
+[开发人员的备忘速查Quick Reference](https://ref.15926.tech)   
+[ChatGPT免翻私有部署]([https://](https://gpt.15926.tech/))
 
 ## 关于此站
 
