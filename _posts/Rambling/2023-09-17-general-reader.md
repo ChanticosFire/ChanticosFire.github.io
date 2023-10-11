@@ -1,11 +1,12 @@
 --- 
- layout: post 
- title: 多端同步阅读进度
- category: 杂谈 
- tags: 其他 
- keywords: Other 
- description:  
- --- 
+layout: post 
+title: 多端同步阅读进度
+category: 杂谈 
+tags: 其他 
+keywords: Other 
+description:  
+--- 
+ 
 阅读的需求是比较重的，平时又有多端使用的习惯，如果没有支持同步的阅读器的话，记住进度再手动翻确实很不优雅，于是开始寻找支持同步功能的多端阅读器。 
 
 这是前言 
