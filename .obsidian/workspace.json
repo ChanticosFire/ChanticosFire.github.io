@@ -1,0 +1,157 @@
+{
+  "main": {
+    "id": "4a3fd3253d4fc364",
+    "type": "split",
+    "children": [
+      {
+        "id": "02e344c0cada9676",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9bbb734f643a2c19",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "_posts/Rambling/2023-11-28-general-quest_scrcpy.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "fbc9ac62c55b88f8",
+    "type": "split",
+    "children": [
+      {
+        "id": "0238afb1823c77b4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f53b25e61dc6f16a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8f23e71b8499ca46",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "6ebb4c72bc63f031",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6b26e1108c5d528a",
+    "type": "split",
+    "children": [
+      {
+        "id": "89a19b3885f6b5b1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "190f0489ab251cf4",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "_posts/Rambling/2023-11-28-general-quest_scrcpy.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "6687ef89ed0aaa41",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "_posts/Rambling/2023-11-28-general-quest_scrcpy.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "18eb3fe3a8fa06ab",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "597c71200333d499",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "_posts/Rambling/2023-11-28-general-quest_scrcpy.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "9bbb734f643a2c19",
+  "lastOpenFiles": [
+    "_posts/Rambling/2023-09-17-general-reader.md",
+    "_posts/Rambling/2023-11-28-general-quest_scrcpy.md",
+    "_posts/Rambling/2023-04-18-general-other.md",
+    "_posts/Rambling/2023-09-04-general-obsdian.md",
+    "_posts/Rambling/2023-11-07-general-ron.md"
+  ]
+}

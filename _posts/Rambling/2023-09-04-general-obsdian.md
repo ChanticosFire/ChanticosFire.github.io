@@ -2,9 +2,10 @@
 layout: post
 title: OneNote转Obsdian的记录
 category: 杂谈
-tags: 其他
+tags:
+  - 其他
 keywords: Other
-description: 
+description:
 ---
 
 ### OneNote转Obsdian的操作记录 
