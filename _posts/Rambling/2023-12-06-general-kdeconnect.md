@@ -17,7 +17,13 @@ QSocketNotifier: Can only be used with threads started with QThread error activa
 将命令更换为`kdeconnect-app`观察打开GUI时的报错信息，得到如下报错：
 
 ```
-QSocketNotifier: Can only be used with threads started with QThread error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") kdeconnect.interfaces: dbus interface not valid error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") kdeconnect.interfaces: dbus interface not valid kdeconnect.interfaces: dbus interface not valid error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") file:///usr/lib/x86_64-linux-gnu/qt5/qml/org/kde/kdeconnect/DBusProperty.qml:48: ReferenceError: write is not defined
+QSocketNotifier: Can only be used with threads started with QThread error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") 
+error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") 
+kdeconnect.interfaces: dbus interface not valid error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") 
+error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") 
+kdeconnect.interfaces: dbus interface not valid kdeconnect.interfaces: dbus interface not valid 
+error activating kdeconnectd: QDBusError("org.freedesktop.DBus.Error.ServiceUnknown", "The name org.kde.kdeconnect was not provided by any .service files") 
+file:///usr/lib/x86_64-linux-gnu/qt5/qml/org/kde/kdeconnect/DBusProperty.qml:48: ReferenceError: write is not defined
 ```
 
   
