@@ -21,9 +21,9 @@ instagram:
 linkedin: 
 
 # avatar and Favicon
-avatar: https://15926.tech/assets/icon/site-avatar.png
+avatar: /assets/icon/site-avatar.png
 #这里填写图片地址
-favicon: https://15926.tech/assets/icon/site-avatar.png
+favicon: /assets/icon/site-avatar.png
 #这里填写图片地址
 
 # disqus config
