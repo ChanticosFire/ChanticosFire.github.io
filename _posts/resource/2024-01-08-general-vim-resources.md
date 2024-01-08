@@ -5,7 +5,7 @@ category: 资源
 tags: Vim
 keywords: Vim
 ---
-
+[Vim 备忘清单 & vim cheatsheet & Quick Reference (15926.tech)](https://ref.15926.tech/docs/vim)
 [Vim](http://www.vim.org/) 8.2 快速参考备忘单的有用集合，可帮助您更快地学习 vim 编辑器。
 
 ## [](https://ref.15926.tech/docs/vim#%E5%85%A5%E9%97%A8)入门
