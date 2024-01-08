@@ -3,7 +3,7 @@ title: Wei's Blog
 email: meow@15926.tech
 description: > # this means to ignore newlines until "baseurl:"
   Wei's Blog
-baseurl: "https://blog.15926.tech/" # the subpath of your site, e.g. /blog/
+baseurl: "https://blog.15926.tech" # the subpath of your site, e.g. /blog/
 url: https://blog.15926.tech # the base hostname & protocol for your site
 rss_url: /pages/feed.xml
 author: Wei He
