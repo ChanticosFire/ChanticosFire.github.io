@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Oracle FS1-2 降级的连接
+title: Oracle FS1-2 外部驱动器
 category: 技术
 tags:
   - 存储
