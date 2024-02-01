@@ -9,7 +9,7 @@ keywords: Windows
 我的两台Windows 10 PC在更新[KB5031355](https://support.microsoft.com/en-us/topic/kb5031355-cumulative-security-update-for-internet-explorer-october-10-2023-c56fd2d7-64c5-4883-8614-b745b7325530)之后，IE再次被禁用了，在此补丁之前用更改注册表的方式启用了IE，但是现在就没法用了，网上找了一下看到了一片讨论，贴在这里：[Force Internet Explorer 11 to open instead of Edge on Windows 10 - Super User](https://superuser.com/questions/1814761/force-internet-explorer-11-to-open-instead-of-edge-on-windows-10)。
 
 这是我现在使用的启动IE的vbs脚本：
-```vbs
+```
 CreateObject("InternetExplorer.Application").Visible=true
 ```
 保存到本地vbs直接执行就可以拉起IE了。
