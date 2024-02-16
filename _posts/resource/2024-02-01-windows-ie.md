@@ -14,7 +14,7 @@ CreateObject("InternetExplorer.Application").Visible=true
 ```
 保存到本地vbs直接执行就可以拉起IE了。
 
-顺便附上更早之前的版本修复用的reg条目，使用这个方法需要自己找到IE的可执行文件来启动：
+顺便附上更早之前的版本修复用的reg条目，导入之后就可以直接通过IE的可执行文件来启动IE：
 ```
 Windows Registry Editor Version 5.00
 
