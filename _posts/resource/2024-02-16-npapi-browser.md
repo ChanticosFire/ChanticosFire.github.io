@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 
+title: 可以使用NPAPI的浏览器
 category: 资源
 tags:
   - 其他
@@ -8,7 +8,7 @@ keywords: Other
 ---
 ## 太长不看版：
 
-[Mozilla Firefox History release)](https://ftp.mozilla.org/pub/firefox/releases/)
+[Mozilla Firefox History release](https://ftp.mozilla.org/pub/firefox/releases/)
 
 ## 正文
 之前发了一个关于启用IE的blog，其实我用IE的原因只是要用JAVA插件，因为许多基础设施的维护管理依赖IE浏览器或老版本JAVA插件，所以必须要保留一个能正常使用的途径。装虚拟机倒是一劳永逸，但是每次启用的时候麻烦，平时带Surface干活这捉急的性能跑Vmware又很卡（此处怒骂Hyper-V的各种恶性bug），也只能在本机跑IE了。
