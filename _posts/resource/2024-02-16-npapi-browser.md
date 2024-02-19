@@ -16,12 +16,7 @@ keywords: Other
 实际上，除了IE之外还有其他使用JAVA插件的方法，JAVA插件本质上是依赖NPAPI来调用的，而由于拉跨的安全性，各浏览器厂商均在几年前把NPAPI给ban了，所以方法很简单：只需要使用未禁用NPAPI之前的版本即可。
 
 找找这几个主流浏览器都在哪个版本禁用的NPAPI：
-
-<<<<<<< HEAD
 - **Chrome** 42版本开始禁用了NPAPI插件，但用户还能手动启用。到了Chrome 45版本（2015年9月发布），Google彻底移除了对NPAPI插件的支持。
-=======
-- **Chrome**：42版本开始禁用了NPAPI插件，但用户还能手动启用。到了Chrome 45版本（2015年9月发布），Google彻底移除了对NPAPI插件的支持。
->>>>>>> 09671e7e07c642a222d18af1d28455a8680ea329
 - **Mozilla Firefox**：Firefox 52版本（2017年3月发布）开始，Mozilla移除了对大多数NPAPI插件的支持，除了Adobe Flash之外。
 - **Apple Safari**：Safari 10版本（2016年发布）开始，Apple限制了NPAPI插件的使用，通过在Safari偏好设置中默认禁用这些插件来实现。Safari 12版本（2018年发布）中，Apple彻底移除了对大多数NPAPI插件的支持，包括Java和Silverlight，但对Adobe Flash的支持保留了更长时间。
 
