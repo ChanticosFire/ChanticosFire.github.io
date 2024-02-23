@@ -6,7 +6,7 @@ layout: post
 ## 关于我 
 <script src="https://tryhackme.com/badge/1980359"></script>
 
-射箭运动员，A证业余无线电爱好者，军宅，技术型Nerrrrd
+射箭运动员，A证业余无线电爱好者，军宅，技术型Nerrrrd，THM TOP 2%
 
 个人爱好广泛，啥都能捣鼓一点，传统计算机行业从业者，从前司离职后Gap中，没事干干活，日常生活就是THM上刷题，看点闲书，打打射箭比赛，训练，打卫星，守听中继上的老哥。
 
