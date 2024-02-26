@@ -36,3 +36,8 @@ layout: post
 Fork自[suyan(github.com)](https://github.com/suyan)，这个博客通过 [Jekyll](http://jekyllrb.com/) 生成，部署在 [Github](https://pages.github.com)，主题基于 [3-Jekyll](https://github.com/P233/3-Jekyll) 修改生成，非常感谢 [Peiwen Lu](https://github.com/P233) 开发出这么漂亮的主题。
 
 本博客的源码托管在 [Github](https://github.com/ChanticosFire/ChanticosFire.github.io) 上，如果有任何改进意见，欢迎联系我[Telegram](https://t.me/D31ay)/[Mail](meow@15926.tech)。
+
+
+  
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
