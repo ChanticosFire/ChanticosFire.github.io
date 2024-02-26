@@ -8,3 +8,5 @@ Gemfile.lock
 _posts/.MWebMetaData/
 .jekyll-metadata
 start
+.obsidian/
+gitcommand.txt
