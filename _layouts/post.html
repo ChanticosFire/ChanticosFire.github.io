@@ -12,10 +12,6 @@ layout: default
   <h1 class="post-title">{{ page.title }}</h1>
   {{ content }}
 </article>
-<!-- 添加不蒜子文章访问量计数器 -->
-<span id="busuanzi_container_page_pv">
-  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
-</span>
 
 <div class="post-share">
   <div class="container">
@@ -23,6 +19,13 @@ layout: default
     <a href="https://www.evernote.com/clip.action?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}" target="_blank" class="post-share-icon evernote"></a>
     <a href="http://service.weibo.com/share/share.php?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title }}" target="_blank" class="post-share-icon weibo"></a>
   </div>
+</div>
+
+<!-- 添加不蒜子文章阅读量计数器，并使其居中显示 -->
+<div style="text-align: center; margin-top: 20px;" class="container">
+  <span id="busuanzi_container_page_pv" style='display:none'>
+    本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+  </span>
 </div>
 
 {% if site.disqus.shortname %}
