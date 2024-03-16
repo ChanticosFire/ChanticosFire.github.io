@@ -17,7 +17,7 @@ layout: compress
                     <!-- 不蒜子访问量计数器 -->
           <div style="text-align: center; margin-top: 20px;">
               <span id="busuanzi_container_site_pv" style='display:none'>
-                  StatTrak™:<span id="busuanzi_value_site_pv"></span>
+                  StatTrak™<span id="busuanzi_value_site_pv"></span>
               </span>
           </div>
         </div>
