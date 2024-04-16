@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 
+title: 赛前训练与竞技状态
 category: 杂谈
 tags:
   - 其他
