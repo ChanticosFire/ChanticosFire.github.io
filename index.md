@@ -13,7 +13,7 @@ layout: post
 工作接触业务范围广+公司日常在实施前一天赶鸭子上架，学到了许多东西，各品牌型号X86和高中低端存储设备几乎可以说是平趟，虽然干活之前的准备期会有焦虑不过倒是没翻过车，也算可以称奇了。
 
 
-本站尚且施工中，目前原生内容较少，日期为2023年之前的几条博文都是Fork本项目的时候附带来的，几条实用命令所以留着也不删了。自己平时没事瞎折腾的时候随手写点细碎的东西，偶尔会想起来把本地写的东西重新组织一下语言传上来。
+本站尚且施工中，自己平时没事瞎折腾的时候随手写点细碎的东西，自己的Blog主打一个随意，想起来啥写啥，偶尔会把本地写的东西重新组织一下语言传上来。
 
 ## 我的其他站点
 [Linux命令搜索引擎](http://15926.tech/linux-command/)   
@@ -33,6 +33,6 @@ layout: post
 
 ## 博客平台
 
-Fork自[suyan(github.com)](https://github.com/suyan)，这个博客通过 [Jekyll](http://jekyllrb.com/) 生成，部署在 [Github](https://pages.github.com)，主题基于 [3-Jekyll](https://github.com/P233/3-Jekyll) 修改生成，非常感谢 [Peiwen Lu](https://github.com/P233) 开发出这么漂亮的主题。
+Fork自[suyan](https://github.com/suyan)，这个博客通过 [Jekyll](http://jekyllrb.com/) 生成，部署在 [Github](https://pages.github.com)，主题基于 [3-Jekyll](https://github.com/P233/3-Jekyll) 修改生成，非常感谢 [Peiwen Lu](https://github.com/P233) 开发出这么漂亮的主题。
 
 本博客的源码托管在 [Github](https://github.com/ChanticosFire/ChanticosFire.github.io) 上，如果有任何改进意见，欢迎联系我[Telegram](https://t.me/D31ay)/[Mail](meow@15926.tech)。
