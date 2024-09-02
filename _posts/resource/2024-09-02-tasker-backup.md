@@ -1,3 +1,11 @@
+---
+title: 使用Tasker自动备份文件
+layout: post
+category: 技术
+tags:
+  - Android
+keywords: Android
+---
 ### Tasker 操作流程文档：自动备份程序的 `.log` 日志文件
 
 由于要调试一个会自动覆盖日志的App，借用Android应用Tasker编写了一个自动备份日志的任务，每 10 秒检查指定目录下是否有包含当天日期的 `.log` 格式日志文件，将这些文件备份到目标目录，并在文件不存在或访问受限时继续执行任务而不中断。
@@ -59,7 +67,8 @@
     - **Action**: `+` > `Task` > `If`
     - **Condition**: `%FilesMatched ~ *`
     - **作用**: 仅当存在匹配的文件时，才执行后续的复制操作。
-	- 注意：完成if的创建并返回后，会出现弹窗让你选择仅创建if还是同时创建end if，在此步骤请点击end if。
+	- **注意**：完成`If`的创建并返回后，会出现弹窗让你选择仅创建`If`还是同时创建`End If`，在此步骤请点击`End If`。
+
 #### **步骤 7：备份日志文件**
 
 1. **Copy File**:
@@ -67,6 +76,7 @@
     - **To**: `/storage/emulated/0/BackupLogs`（虚构路径，用于存放备份的日志文件）。
     - **Continue Task After Error**: 启用此选项，以确保在没有文件匹配时任务继续执行而不会中止。
 	- 创建完成Copy File后，长按此模块将其拖到If和End If中间。
+
 #### **步骤 8：等待 10 秒**
 
 1. **Wait**:
