@@ -21,6 +21,7 @@ layout: post
 
 ## 我的其他站点
 
+- [诺诺的地球online二周目](https://texboot.15926.tech): 一个乱七八糟的频道，什么都发
 - [Linux命令搜索引擎](http://15926.tech/linux-command/): 提供常用Linux命令的快速搜索
 - [开发人员的备忘速查Quick Reference](https://ref.15926.tech): 开发人员的常用备忘速查手册
 - [ChatGPT免翻私有部署 ChatGPT-Next-Web](https://gpt.15926.tech): 私有部署的ChatGPT工具（请自备API Key）
