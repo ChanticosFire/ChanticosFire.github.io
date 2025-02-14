@@ -1,5 +1,5 @@
 ---
-layout: focus-and-adaptability
+layout: post
 title: 专注力：从射箭到故障处理
 category: 杂谈
 tags:
