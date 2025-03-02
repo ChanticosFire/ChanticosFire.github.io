@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 自己动手丰衣足食
+title: 改了个小游戏
 category: 资源
 tags:
   - Android
@@ -50,4 +50,4 @@ protected void createItems() {
 ```
 改好了在GitHub上用Actions打包，拿来自己玩。
 
-文件暂存[诺诺网盘](https://pan.15926.tech/d/%F0%9F%94%91Onedrive/%F0%9F%8E%AEGame/shattered-pixel-dungeon_1.1.apk)
+文件暂存[诺诺网盘](https://pan.15926.tech/%F0%9F%94%91Onedrive/%F0%9F%8E%AEGame/shattered-pixel-dungeon_1.1.apk)
