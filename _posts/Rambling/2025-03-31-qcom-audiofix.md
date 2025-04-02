@@ -65,7 +65,8 @@ avc: denied { getattr } for comm="mount" path="/vendor/dsp" scontext=u:r:system_
 用 adb 快速连接并执行：
 
 ```
-adb shell setprop persist.vendor.audio.hal.disable 1 setprop persist.vendor.audio.init_disabled 1
+setprop persist.vendor.audio.hal.disable 1 
+setprop persist.vendor.audio.init_disabled 1
 ```
 
 然后立即`reboot`重启设备（防止触发下一轮 watchdog）
