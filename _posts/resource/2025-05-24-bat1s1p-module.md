@@ -1,6 +1,6 @@
 ---
 layout: post
-title: IBM 81Y4451 Raid卡缓存电池拆解。
+title: IBM 81Y4451 Raid卡缓存电池拆解
 category: 硬件
 tags:
   - 硬件
