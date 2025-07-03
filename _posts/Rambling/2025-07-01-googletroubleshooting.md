@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 
+title: 有效的故障排除-摘录
 category: 技术
 tags:
   - 技巧
