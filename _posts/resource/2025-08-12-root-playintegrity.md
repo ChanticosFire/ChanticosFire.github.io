@@ -4,13 +4,18 @@ title: Moto Edge 60 Pro Root & 隐藏方案（KSU-NEXT + Play Integrity FULL PAS
 category: 技术
 tags:
   - Android
-  - Google
   - root
-  - 玩机
+  - 隐藏Bootloader
+  - MotoEdge60Pro解锁BL
+  - GooglePlay完整性
 keywords: Android
 ---
 # Moto Edge 60 Pro Root & 隐藏方案（KSU-NEXT + Play Integrity FULL PASS）
 
+### 前言：
+用了五年的Oneplus 8T已经是风烛残年，不堪再用，看着现在对原生爱好者越来越不友好的Android环境，魔改和内置绿坝的ROM，出国就锁机的欧加，实在不知道换什么好。
+Sony现在品质也下滑，三丧解锁就熔断，Pixel加一张ESIM之后老有通话中断问题，而且鸡蛋不能放在一个篮子里。和朋友开玩笑讲玩机玩到最后是iPhone，到底在追求稳定性上面还是这个令人讨厌的品牌做的最好。
+最后到底还是选了moto，不仅是在现在依旧难得的类原生，另一个重点更是便宜。
 ## 1. 设备与前提
 我的环境：
 
