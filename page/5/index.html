@@ -669,15 +669,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/06/oracle-fsdisk-1/" target="_self">
-          Oracle FS1-2 降级的连接
+        <a href="/2024/01/06/oracle-fsdisk-2/" target="_self">
+          Oracle FS1-2 外部驱动器
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/06/oracle-fsdisk-1/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/06/oracle-fsdisk-2/" target="_self">
         <div>
-          在 FS1 系统上，我们有两个采用主动-主动配置的控制器，为通过 SAS 链路连接的磁盘机箱的后端驱动器提供 IO。连接性能下降的驱动器（部分脱机事件）表示其从 Controller 的路径之一已关闭。 Oracle FS System Manager （ GUI） 在“驱动器机箱”和“驱动器组”下显示驱动器的“连接降级”状态或LUN的“LUN保守运行”状态。 原因连接性降级 （RAID_EVEN
+          “外部”驱动器将出现系统警报，并且驱动器状态在 GUI 和 fscli 输出中都显示为“外部”。 通常，当更换故障驱动器或将驱动器机箱添加到 FS1-2 系统时，会发生这种情况。 在驱动器箱或驱动器组中执行恢复操作时也可能遇到此问题。 FS1-2 软件要求手动接受任何它事先不了解的驱动器。 注意：接受“外部”驱动器将使此驱动器上的任何现有数据无法访问。 在 FS1 系统中更换故障驱动器后，新驱动器
         </div>
       </a>
 
@@ -730,15 +730,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/06/oracle-fsdisk-2/" target="_self">
-          Oracle FS1-2 外部驱动器
+        <a href="/2024/01/06/oracle-fsdisk-1/" target="_self">
+          Oracle FS1-2 降级的连接
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/06/oracle-fsdisk-2/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/06/oracle-fsdisk-1/" target="_self">
         <div>
-          “外部”驱动器将出现系统警报，并且驱动器状态在 GUI 和 fscli 输出中都显示为“外部”。 通常，当更换故障驱动器或将驱动器机箱添加到 FS1-2 系统时，会发生这种情况。 在驱动器箱或驱动器组中执行恢复操作时也可能遇到此问题。 FS1-2 软件要求手动接受任何它事先不了解的驱动器。 注意：接受“外部”驱动器将使此驱动器上的任何现有数据无法访问。 在 FS1 系统中更换故障驱动器后，新驱动器
+          在 FS1 系统上，我们有两个采用主动-主动配置的控制器，为通过 SAS 链路连接的磁盘机箱的后端驱动器提供 IO。连接性能下降的驱动器（部分脱机事件）表示其从 Controller 的路径之一已关闭。 Oracle FS System Manager （ GUI） 在“驱动器机箱”和“驱动器组”下显示驱动器的“连接降级”状态或LUN的“LUN保守运行”状态。 原因连接性降级 （RAID_EVEN
         </div>
       </a>
 
