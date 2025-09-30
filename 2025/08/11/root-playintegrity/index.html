@@ -1,0 +1,858 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/site-avatar.png">
+  <link rel="icon" href="/img/site-avatar.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wei">
+  <meta name="keywords" content="Android">
+  
+    <meta name="description" content="前言：用了五年的Oneplus 8T已经是风烛残年，不堪再用，看着现在对原生爱好者越来越不友好的Android环境，魔改和内置绿坝的ROM，出国就锁机的欧加，实在不知道换什么好。Sony现在品质也下滑，三丧解锁就熔断，Pixel加一张ESIM之后老有通话中断问题，而且鸡蛋不能放在一个篮子里。和朋友开玩笑讲玩机玩到最后是iPhone，到底在追求稳定性上面还是这个令人讨厌的品牌做的最好。最后到底还是选">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Moto Edge 60 Pro Root &amp; 隐藏方案（KSU-NEXT + Play Integrity FULL PASS）">
+<meta property="og:url" content="http://example.com/2025/08/11/root-playintegrity/index.html">
+<meta property="og:site_name" content="Why Blog | Wei&#39;s Blog">
+<meta property="og:description" content="前言：用了五年的Oneplus 8T已经是风烛残年，不堪再用，看着现在对原生爱好者越来越不友好的Android环境，魔改和内置绿坝的ROM，出国就锁机的欧加，实在不知道换什么好。Sony现在品质也下滑，三丧解锁就熔断，Pixel加一张ESIM之后老有通话中断问题，而且鸡蛋不能放在一个篮子里。和朋友开玩笑讲玩机玩到最后是iPhone，到底在追求稳定性上面还是这个令人讨厌的品牌做的最好。最后到底还是选">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-11T08:00:00.000Z">
+<meta property="article:modified_time" content="2025-09-29T07:51:51.000Z">
+<meta property="article:author" content="Wei">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="GooglePlay完整性">
+<meta property="article:tag" content="MotoEdge60Pro解锁BL">
+<meta property="article:tag" content="root">
+<meta property="article:tag" content="隐藏Bootloader">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Moto Edge 60 Pro Root &amp; 隐藏方案（KSU-NEXT + Play Integrity FULL PASS） - Why Blog | Wei&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Why Blog | Wei&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://texboot.15926.tech/" target="_blank">
+                <i class="iconfont icon-link-fill"></i>
+                <span>channel</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Moto Edge 60 Pro Root &amp; 隐藏方案（KSU-NEXT + Play Integrity FULL PASS）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-11 16:00" pubdate>
+          2025年8月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Moto Edge 60 Pro Root &amp; 隐藏方案（KSU-NEXT + Play Integrity FULL PASS）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>用了五年的Oneplus 8T已经是风烛残年，不堪再用，看着现在对原生爱好者越来越不友好的Android环境，魔改和内置绿坝的ROM，出国就锁机的欧加，实在不知道换什么好。<br>Sony现在品质也下滑，三丧解锁就熔断，Pixel加一张ESIM之后老有通话中断问题，而且鸡蛋不能放在一个篮子里。和朋友开玩笑讲玩机玩到最后是iPhone，到底在追求稳定性上面还是这个令人讨厌的品牌做的最好。<br>最后到底还是选了moto，不仅是在现在依旧难得的类原生易解锁，另一个重点更是便宜，新机到手之后，照旧root掉，网上能找到的全都是magisk的root方案，而且也多半写的不对，和GPT5一起倒腾了一下，把全部流程梳理了出来，以供有需求者参考。</p>
+<h2 id="1-设备与前提"><a href="#1-设备与前提" class="headerlink" title="1. 设备与前提"></a>1. 设备与前提</h2><p>我的环境：</p>
+<ul>
+<li>机型：Moto Edge 60 Pro（RETCN）</li>
+<li>系统版本：Android 15</li>
+<li>内核版本：<code>6.1.115-android14-11-g32fd20834ef3-ab13251582</code></li>
+<li><strong>目标</strong>：解锁 Bootloader，获取 Root、使用 LSPosed 模块、隐藏 Root，并通过 Play Integrity <strong>Strong</strong> 检测</li>
+</ul>
+<hr>
+<h2 id="2-解锁和-Root-方案（KSU-NEXT-LKM）"><a href="#2-解锁和-Root-方案（KSU-NEXT-LKM）" class="headerlink" title="2. 解锁和 Root 方案（KSU-NEXT &#x2F; LKM）"></a>2. 解锁和 Root 方案（KSU-NEXT &#x2F; LKM）</h2><h3 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h3><ol>
+<li><p>安装 <strong>Moto 驱动</strong>（供 PC 通过 ADB 连接手机）<br> <a target="_blank" rel="noopener" href="https://en-us.support.motorola.com/app/usb-drivers">Motorola 官方 USB 驱动下载</a></p>
+</li>
+<li><p>安装 <strong>ADB &amp; Fastboot 环境</strong>（此处不赘述）</p>
+</li>
+<li><p>可选：下载 <a target="_blank" rel="noopener" href="https://bbs.ixmoe.com/t/topic/17646">Tiny Fastboot Script v1.10.6</a> 方便操作</p>
+</li>
+<li><p>获取对应系统版本固件</p>
+<ul>
+<li>我的设备：<code>XT2507-5_CYBERT_RETCN</code></li>
+<li>系统版本：<code>15_V2VVC35.58</code></li>
+<li>固件下载地址：<a target="_blank" rel="noopener" href="https://mirrors.lolinet.com/firmware/lenomola/2025/cybert_retcn/official/RETCN/">RETCN 官方固件镜像</a></li>
+</ul>
+</li>
+<li><p>下载所需模块，我使用的版本如下（建议使用最新版）：</p>
+<ul>
+<li><p><strong>Zygisk Next</strong>： <a target="_blank" rel="noopener" href="https://github.com/Dr-TSNG/ZygiskNext">Dr-TSNG&#x2F;ZygiskNext</a><br>  <code>Zygisk-Next-1.2.9.1-534-b8e7e21-release</code></p>
+</li>
+<li><p><strong>LSPosed（Zygisk 版）</strong>： <a target="_blank" rel="noopener" href="https://github.com/JingMatrix/LSPosed">JingMatrix&#x2F;LSPosed</a><br>  <code>LSPosed-v1.10.2-7182-zygisk-release</code></p>
+</li>
+<li><p><strong>Shamiko</strong>： <a target="_blank" rel="noopener" href="https://github.com/LSPosed/LSPosed.github.io/releases">LSPosed&#x2F;Shamiko</a><br>  <code>Shamiko-v1.2.5-414-release</code></p>
+</li>
+<li><p><strong>Play Integrity Fix (PIF)</strong>： <a target="_blank" rel="noopener" href="https://github.com/KOWX712/PlayIntegrityFix">KOWX712&#x2F;PlayIntegrityFix</a><br>  <code>PlayIntegrityFix_v4.2-inject-s</code></p>
+</li>
+<li><p><strong>TrickyStore</strong>： <a target="_blank" rel="noopener" href="https://github.com/5ec1cff/TrickyStore">5ec1cff&#x2F;TrickyStore</a><br>  <code>Tricky-Store-v1.3.0-180-8acfa57-release</code></p>
+</li>
+<li><p><strong>TrickyStore Addon</strong>： <a target="_blank" rel="noopener" href="https://github.com/KOWX712/Tricky-Addon-Update-Target-List">KOWX712&#x2F;Tricky-Addon-Update-Target-List</a><br>  <code>TrickyAddonModule-v4.1</code></p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="解锁-Bootloader"><a href="#解锁-Bootloader" class="headerlink" title="解锁 Bootloader"></a>解锁 Bootloader</h3><ol>
+<li><p>开启 <strong>开发者选项</strong> → 打开 <strong>OEM 解锁</strong> 和 <strong>USB 调试</strong>。</p>
+</li>
+<li><p>ADB 模式下执行：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">adb reboot fastboot <br>fastboot oem get_unlock_data<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>将输出内容去掉换行与无关字符，提交到 <a target="_blank" rel="noopener" href="https://motorola-global-portal.custhelp.com/app/standalone/bootloader/unlock-your-device-a">摩托罗拉解锁页面</a> 获取解锁码。</p>
+</li>
+<li><p>使用Tiny Fastboot Script或直接在adb执行：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">fastboot oem unlock &lt;解锁码&gt;<br></code></pre></td></tr></table></figure>
+
+<pre><code class="hljs">按音量键+电源键确认。
+</code></pre>
+<hr>
+<h3 id="获取-Root（KSU-NEXT-LKM-模式）"><a href="#获取-Root（KSU-NEXT-LKM-模式）" class="headerlink" title="获取 Root（KSU-NEXT &#x2F; LKM 模式）"></a>获取 Root（KSU-NEXT &#x2F; LKM 模式）</h3><ol>
+<li><p>从官方固件提取 <strong>init_boot.img</strong>。</p>
+</li>
+<li><p>推送到手机：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">adb push init_boot.img /sdcard/<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>在手机上使用 <strong>KernelSU NEXT</strong> 修补 <code>init_boot.img</code>（模式选择 <strong>LKM</strong>）。</p>
+</li>
+<li><p>将修补好的文件拉回电脑：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">adb pull /sdcard/&lt;修补后文件名&gt;.img<br></code></pre></td></tr></table></figure>
+<ol start="5">
+<li>确认当前槽位：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">fastboot getvar current-slot<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">我的返回 `a`，则刷写到 `a` 槽：
+</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml">fastboot flash init_boot_a <span class="hljs-tag">&lt;<span class="hljs-name">patched_init_boot.img</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<ol start="6">
+<li>重启并确认 <strong>KSU-Next</strong> 正常启用，且为 <strong>LKM 模式</strong>。</li>
+</ol>
+<hr>
+<h2 id="3-Zygisk-模块环境"><a href="#3-Zygisk-模块环境" class="headerlink" title="3. Zygisk + 模块环境"></a>3. Zygisk + 模块环境</h2><ol>
+<li>在 <strong>KSU-Next</strong> 中启用 <strong>Zygisk Next</strong>。</li>
+<li>安装 <strong>LSPosed Zygisk 版</strong>（注意不要用无法启动的官方旧版）。</li>
+<li>安装 <strong>Shamiko</strong>（App Profile 模式，配合 DenyList 隐藏 Root）。</li>
+</ol>
+<p>至此，root环境已经正常可用，但momo仍可检测到bl状态，Play完整性不通过</p>
+<hr>
+<h2 id="4-Play-Integrity-隐藏方案"><a href="#4-Play-Integrity-隐藏方案" class="headerlink" title="4. Play Integrity 隐藏方案"></a>4. Play Integrity 隐藏方案</h2><h3 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h3><ol>
+<li><p>安装：</p>
+<ul>
+<li><strong>PIF</strong></li>
+<li><strong>TrickyStore</strong></li>
+<li><strong>TrickyStore Addon</strong></li>
+</ul>
+</li>
+<li><p>重启手机。</p>
+</li>
+<li><p>打开 <strong>PIF</strong> → 执行初始化。</p>
+</li>
+<li><p>使用 MT 文件管理器或任何可使用root权限的文件管理器进入 <code>/data/adb</code>，找到 <code>pif.prop</code>（或 <code>pif.json</code>），确认指纹（我的是 <code>Pixel 8 Pro</code>）。<br> 将该文件复制到：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/data/adb/modules/playintegrityfix/<br></code></pre></td></tr></table></figure>
+<ol start="5">
+<li><p>重启。</p>
+</li>
+<li><p>打开 <strong>KSU → Tricky Store</strong>：</p>
+<ul>
+<li>勾选：<ul>
+<li>Google Play Services</li>
+<li>Google Play Store</li>
+<li>Google Services Framework</li>
+</ul>
+</li>
+<li>菜单 →执行 <strong>Set Valid Keybox</strong><ul>
+<li>执行 <strong>Set AOSP Key</strong></li>
+<li>执行 <strong>Set Unknown Key</strong></li>
+</ul>
+</li>
+<li>菜单 → <strong>Set Security Patch</strong> → <strong>Get Security Patch Date</strong> → <strong>Save</strong></li>
+</ul>
+</li>
+<li><p>重启设备。</p>
+</li>
+</ol>
+<hr>
+<h2 id="5-完整性验证"><a href="#5-完整性验证" class="headerlink" title="5. 完整性验证"></a>5. 完整性验证</h2><p>我在设置中清除了Google Play数据，然后使用了以下工具验证：</p>
+<ul>
+<li><strong>momo</strong>（检测 Root &#x2F; 系统状态）</li>
+<li><strong>SPIC</strong>（Simple Play Integrity Checker）</li>
+<li><strong>TBCheck</strong>（TBSafetyChecker）</li>
+</ul>
+<p>结果：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">deviceRecognitionVerdict： <br>MEETS<span class="hljs-emphasis">_BASIC_INTEGRITY </span><br><span class="hljs-emphasis">MEETS_DEVICE_INTEGRITY </span><br><span class="hljs-emphasis">MEETS_STRONG_</span>INTEGRITY<br></code></pre></td></tr></table></figure>
+
+<p>已完全通过 Google Play Integrity（Strong）。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Android/" class="print-no-link">#Android</a>
+      
+        <a href="/tags/root/" class="print-no-link">#root</a>
+      
+        <a href="/tags/%E9%9A%90%E8%97%8FBootloader/" class="print-no-link">#隐藏Bootloader</a>
+      
+        <a href="/tags/MotoEdge60Pro%E8%A7%A3%E9%94%81BL/" class="print-no-link">#MotoEdge60Pro解锁BL</a>
+      
+        <a href="/tags/GooglePlay%E5%AE%8C%E6%95%B4%E6%80%A7/" class="print-no-link">#GooglePlay完整性</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Moto Edge 60 Pro Root &amp; 隐藏方案（KSU-NEXT + Play Integrity FULL PASS）</div>
+      <div>http://example.com/2025/08/11/root-playintegrity/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-cc-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/11/capital-shutdown/" title="被资本做局了(bushi">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">被资本做局了(bushi</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/06/30/googletroubleshooting/" title="有效的故障排除-摘录">
+                        <span class="hidden-mobile">有效的故障排除-摘录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        StatTrak™ 
+        <span id="busuanzi_value_site_pv"></span>
+         
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
