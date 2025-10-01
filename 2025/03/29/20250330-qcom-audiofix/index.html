@@ -1,0 +1,779 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/site-avatar.png">
+  <link rel="icon" href="/img/site-avatar.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Caleb">
+  <meta name="keywords" content="Android">
+  
+    <meta name="description" content="问题背景设备：OnePlus 8T平台：Qualcomm QCOM系统表现：  电量耗尽 → 关机 → 充电重启后出现音频故障 系统内所有音频相关部分完全失效 麦克风和扬声器无法使用 某些调用麦克风的应用（如录音）直接 hang 住 重启 &#x2F; 安全模式 &#x2F; 单清缓存 无法解决  故障日志在 adb logcat 中持续出现如下错误： 12345F libc    : Fatal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OnePlus 8T音频服务故障深度排查与修复记录">
+<meta property="og:url" content="http://example.com/2025/03/29/20250330-qcom-audiofix/index.html">
+<meta property="og:site_name" content="Caleb&#39;s Blog">
+<meta property="og:description" content="问题背景设备：OnePlus 8T平台：Qualcomm QCOM系统表现：  电量耗尽 → 关机 → 充电重启后出现音频故障 系统内所有音频相关部分完全失效 麦克风和扬声器无法使用 某些调用麦克风的应用（如录音）直接 hang 住 重启 &#x2F; 安全模式 &#x2F; 单清缓存 无法解决  故障日志在 adb logcat 中持续出现如下错误： 12345F libc    : Fatal">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/general-tools.png">
+<meta property="article:published_time" content="2025-03-29T08:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-01T14:42:00.079Z">
+<meta property="article:author" content="Caleb">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/general-tools.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>OnePlus 8T音频服务故障深度排查与修复记录 - Caleb&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Caleb&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://texboot.15926.tech/" target="_blank">
+                <i class="iconfont icon-link-fill"></i>
+                <span>channel</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="OnePlus 8T音频服务故障深度排查与修复记录"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-03-29 16:00" pubdate>
+          2025年3月29日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          41 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">OnePlus 8T音频服务故障深度排查与修复记录</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>设备：<strong>OnePlus 8T</strong><br>平台：<strong>Qualcomm QCOM</strong><br>系统表现：</p>
+<ul>
+<li>电量耗尽 → 关机 → 充电重启后出现音频故障</li>
+<li><strong>系统内所有音频相关部分完全失效</strong></li>
+<li><strong>麦克风和扬声器无法使用</strong></li>
+<li>某些调用麦克风的应用（如录音）直接 hang 住</li>
+<li><strong>重启 &#x2F; 安全模式 &#x2F; 单清缓存</strong> 无法解决</li>
+</ul>
+<h2 id="故障日志"><a href="#故障日志" class="headerlink" title="故障日志"></a>故障日志</h2><p>在 <code>adb logcat</code> 中持续出现如下错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid XXXX (TimeCheckThread), pid XXXX (audioserver)<br>Abort message: &#x27;TimeCheck timeout for IAudioFlinger command 22&#x27;<br><br>AudioManager: updateAudioPortCache: listAudioPorts failed<br>AudioSystem-JNI: AudioSystem::listAudioPorts error -19<br></code></pre></td></tr></table></figure>
+<h3 id="初步判断"><a href="#初步判断" class="headerlink" title="初步判断"></a>初步判断</h3><ul>
+<li><p><code>IAudioFlinger command 22 timeout</code>：音频 HAL 无法响应，服务 hang 死</p>
+</li>
+<li><p><code>listAudioPorts error -19</code>：设备节点或 HAL 无法初始化</p>
+</li>
+<li><p>系统表现符合 audio HAL 初始化失败</p>
+</li>
+</ul>
+<h2 id="初次尝试解决：更换硬件"><a href="#初次尝试解决：更换硬件" class="headerlink" title="初次尝试解决：更换硬件"></a>初次尝试解决：更换硬件</h2><p>由于对 Android 底层调试能力有限，最初怀疑为主板或音频芯片故障，进行了 硬件更换，故障随之消失。</p>
+<p>但 两个月后问题再次复现，且在执行<code>setprop</code>和<code>start/stop audioserver</code>命令后进入自动重启循环状态，说明 <strong>问题并非硬件，而是软件或系统配置异常</strong>。</p>
+<p>在查看内核日志时发现如下关键报错：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">avc: denied &#123; getattr &#125; <span class="hljs-keyword">for</span> <span class="hljs-attribute">comm</span>=<span class="hljs-string">&quot;mount&quot;</span> <span class="hljs-attribute">path</span>=<span class="hljs-string">&quot;/vendor/dsp&quot;</span> <span class="hljs-attribute">scontext</span>=u:r:system_app:s0 <span class="hljs-attribute">tcontext</span>=u:object_r:adsprpcd_file:s0 <span class="hljs-attribute">tclass</span>=dir <span class="hljs-attribute">permissive</span>=0`<br></code></pre></td></tr></table></figure>
+<p><em>SELinux 拦截了 audio 服务访问 <code>/vendor/dsp</code>（ADSP 固件目录）的权限，导致音频 DSP 无法加载 → HAL 初始化失败 → <code>audioserver</code> 崩溃重启 → 触发Watchdog，系统陷入重启循环或完全丧失音频功能。</em></p>
+<p>尝试使用 <code>setenforce 0</code> 放宽权限限制</p>
+<p>无效 —— 原因是：这只能修改“当前运行时”的 SELinux 模式，<strong>无法影响系统 early-init 阶段的权限策略执行</strong>。</p>
+<h2 id="应急处理（可恢复进入系统）"><a href="#应急处理（可恢复进入系统）" class="headerlink" title="应急处理（可恢复进入系统）"></a>应急处理（可恢复进入系统）</h2><p>暂时禁用音频 HAL，避免无限重启</p>
+<p>用 adb 快速连接并执行：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stylus">setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.hal</span><span class="hljs-selector-class">.disable</span> <span class="hljs-number">1</span> <br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.init_disabled</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>然后立即<code>reboot</code>重启设备（防止触发下一轮 watchdog）</p>
+<h3 id="对-setprop-的修正说明"><a href="#对-setprop-的修正说明" class="headerlink" title="对 setprop 的修正说明"></a>对 <code>setprop</code> 的修正说明</h3><p>此前多次参考资料使用：<br><code>setprop persist.vendor.audio.hal.disable 1</code><br>来避免音频服务死循环重启。</p>
+<p>实际上这会完全禁用 audio HAL，导致系统彻底无法发声</p>
+<p>正确理解如下：</p>
+<p>setprop persist.vendor.audio.hal.disable 0 这类命令是通过设置系统属性的方式来启用或关闭某些功能，当<br><code>setprop persist.vendor.audio.hal.disable 0</code><br>时，通常表示**不禁用（启用）**这个音频 HAL；而如果设置成<br><code>setprop persist.vendor.audio.hal.disable 1</code><br>则表示禁用这个音频 HAL。”<br>所以：</p>
+<ul>
+<li><p><code>setprop persist.vendor.audio.hal.disable 0</code> → <strong>启用音频 HAL</strong></p>
+</li>
+<li><p><code>setprop persist.vendor.audio.hal.disable 1</code> → <strong>禁用音频 HAL</strong></p>
+</li>
+</ul>
+<p>音频服务即使恢复成功，但若 disable 参数仍为 1，仍将保持静音状态”</p>
+<h2 id="初步解决方案：Magisk-SELinux-Permissive-模块"><a href="#初步解决方案：Magisk-SELinux-Permissive-模块" class="headerlink" title="初步解决方案：Magisk SELinux Permissive 模块"></a>初步解决方案：Magisk SELinux Permissive 模块</h2><p>安装以下 Magisk 模块，使系统 <strong>在引导阶段即处于 Permissive 模式</strong>：<br><strong>注意，此操作会降低系统安全性。</strong><br> <a target="_blank" rel="noopener" href="https://github.com/evdenis/selinux_permissive">https://github.com/evdenis/selinux_permissive</a><br>安装完成后，可使用 <code>getenforce</code>命令 验证模块是否生效，需在 early-init 阶段生效才具备作用。</p>
+<p>宇宙安全声明：<strong>将系统 SELinux 全局设为 Permissive 并非长期可取</strong>，最佳实践是<strong>最小化策略放行</strong>。这一点在调试阶段可以接受，但是如要做长期稳定的修复方案，最好是编写自定义的 <code>magisk policy.cil</code>，只放行所需访问，而非将系统整体放宽，如果是官方ROM且 bootloader 已解，可以考虑在 <code>vendor/etc/selinux/vendor_file_contexts</code> 或<code>vendor/etc/selinux/nonplat_vendor.cil</code> 中添加针对 <code>/vendor/dsp</code> 及音频进程的规则；但这也需要更高门槛的 ROM 定制或补丁能力。</p>
+<h3 id="确定音频架构"><a href="#确定音频架构" class="headerlink" title="确定音频架构"></a>确定音频架构</h3><p>查看<code> /data/vendor/audio/acdbdata/delta/</code>发现</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">OnePlus8T:<span class="hljs-regexp">/ # ls /</span>data<span class="hljs-regexp">/vendor/</span>audio<span class="hljs-regexp">/acdbdata/</span>delta/<br>MTP_Bluetooth_cal.acdbdelta  MTP_Handset_cal.acdbdelta  MTP_Speaker_cal.acdbdelta<br>MTP_General_cal.acdbdelta    MTP_Hdmi_cal.acdbdelta     MTP_workspaceFile.qwspdelta<br>MTP_Global_cal.acdbdelta     MTP_Headset_cal.acdbdelta  adsp_avs_config.acdbdelta<br></code></pre></td></tr></table></figure>
+<p>这说明 OnePlus 8T 使用的是 <strong>QTI 音频 HAL + acdbdelta 动态校准数据结构</strong>，而不依赖传统 <code>/persist/audio</code> 路径。</p>
+<h2 id="实际修复流程（已验证有效）"><a href="#实际修复流程（已验证有效）" class="headerlink" title="实际修复流程（已验证有效）"></a>实际修复流程（已验证有效）</h2><h3 id="清除-audio-状态"><a href="#清除-audio-状态" class="headerlink" title="清除 audio 状态"></a>清除 audio 状态</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.hal</span><span class="hljs-selector-class">.disable</span> <span class="hljs-number">0</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.init_disabled</span> <span class="hljs-number">0</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.freshstart</span> true<br></code></pre></td></tr></table></figure>
+
+<h3 id="设置-acdb-相关路径变量"><a href="#设置-acdb-相关路径变量" class="headerlink" title="设置 acdb 相关路径变量"></a>设置 acdb 相关路径变量</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile0</span> /data/vendor/audio/acdbdata/delta/MTP_Handset_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile1</span> /data/vendor/audio/acdbdata/delta/MTP_Headset_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile2</span> /data/vendor/audio/acdbdata/delta/MTP_Speaker_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile3</span> /data/vendor/audio/acdbdata/delta/MTP_Bluetooth_cal.acdbdelta<br></code></pre></td></tr></table></figure>
+
+<h3 id="构造-HAL-fallback-所依赖的-persist-路径，避免初始化失败”"><a href="#构造-HAL-fallback-所依赖的-persist-路径，避免初始化失败”" class="headerlink" title="构造 HAL fallback 所依赖的 persist 路径，避免初始化失败”"></a>构造 HAL fallback 所依赖的 persist 路径，避免初始化失败”</h3><p><em>此步骤或许并非必须</em></p>
+<p>为避免系统在初始化时尝试访问不存在的旧路径 <code>/mnt/vendor/persist/audio</code> 导致 HAL 初始化失败，手动创建该目录并设置权限：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">mkdir -p <span class="hljs-regexp">/mnt/</span>vendor<span class="hljs-regexp">/persist/</span>audio<br>chmod <span class="hljs-number">755</span> <span class="hljs-regexp">/mnt/</span>vendor<span class="hljs-regexp">/persist/</span>audio<br>chown system:system <span class="hljs-regexp">/mnt/</span>vendor<span class="hljs-regexp">/persist/</span>audio<br>restorecon -Rv <span class="hljs-regexp">/mnt/</span>vendor<span class="hljs-regexp">/persist/</span>audio<br></code></pre></td></tr></table></figure>
+<p>系统随后会识别此路径为合法 <code>vendor_persist_audio_file</code> 类型，<strong>不再报 SELinux 错误</strong>。<br> 也有一些机型不会强制访问 <code>/mnt/vendor/persist/audio</code>，对缺失的目录只发一个 <code>-ENOENT</code> 日志，然后正常转到下一路径。这就意味着<strong>是否“必须”创建该目录</strong>，需要在具体机型&#x2F;vendor 代码中确认。可以在 <code>vendor</code> 分区下的 <code>audio_platform_info.xml</code> 或者“音频 HAL 源码”（如果能拿到的话）看到它对 fallback 路径的处理方式。</p>
+<h3 id="设置音频-HAL-与校准参数"><a href="#设置音频-HAL-与校准参数" class="headerlink" title="设置音频 HAL 与校准参数"></a>设置音频 HAL 与校准参数</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.hal</span><span class="hljs-selector-class">.disable</span> <span class="hljs-number">0</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.init_disabled</span> <span class="hljs-number">0</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.freshstart</span> true<br>setprop vendor<span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.hal</span><span class="hljs-selector-class">.debug_level</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p><code>setprop</code> 会在系统运行期间生效” ，这类 <code>persist.*</code> 属性在 reboot 后可保留，适合做长期配置；但必须在 HAL 初始化前设定，重启后自动应用。</p>
+<h3 id="指定校准数据"><a href="#指定校准数据" class="headerlink" title="指定校准数据"></a>指定校准数据</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile0</span> /data/vendor/audio/acdbdata/delta/MTP_Handset_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile1</span> /data/vendor/audio/acdbdata/delta/MTP_Headset_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile2</span> /data/vendor/audio/acdbdata/delta/MTP_Speaker_cal<span class="hljs-selector-class">.acdbdelta</span><br>setprop persist<span class="hljs-selector-class">.vendor</span><span class="hljs-selector-class">.audio</span><span class="hljs-selector-class">.calfile3</span> /data/vendor/audio/acdbdata/delta/MTP_Bluetooth_cal.acdbdelta<br></code></pre></td></tr></table></figure>
+
+<h3 id="重启音频服务链"><a href="#重启音频服务链" class="headerlink" title="重启音频服务链"></a>重启音频服务链</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs crmsh"><span class="hljs-literal">stop</span> vendor.audio-hal<br><span class="hljs-literal">stop</span> audioserver<br><span class="hljs-literal">start</span> vendor.audio-hal<br><span class="hljs-literal">start</span> audioserver<br></code></pre></td></tr></table></figure>
+
+<h3 id="最后重启"><a href="#最后重启" class="headerlink" title="最后重启"></a>最后重启</h3><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">reboot</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>重启后，音频服务正常启动、无报错、所有功能恢复正常。多次尝试重启&#x2F;挂起唤醒等操作，问题<strong>均未再复现</strong>。</p>
+<hr>
+<h2 id="总结和分析"><a href="#总结和分析" class="headerlink" title="总结和分析"></a>总结和分析</h2><ul>
+<li><strong>音频异常并非硬件问题，而是 SELinux 策略拦截导致</strong>，通过 Magisk 模块设为 Permissive 状态，即可恢复 <code>/vendor/dsp</code> 权限。</li>
+<li>OnePlus 8T 使用基于 <strong>QTI</strong> 平台的音频架构，其校准数据位于 <code>/data/vendor/audio/acdbdata/delta/</code>，并非传统 <code>/mnt/vendor/persist/audio/</code>，当系统缺失该目录时（或 HAL 启动期尝试访问该路径失败），可能仍然触发 fallback 错误，因此建议<strong>构造一个合法空目录</strong>防止异常。</li>
+<li>所有 <code>setprop persist.vendor.audio.calfileX</code> 都是传递给 HAL 和 DSP 设备的路径参数，必须在 HAL 初始化前设置。</li>
+<li><code>persist.vendor.audio.freshstart=true</code> 可强制系统跳过缓存，重新加载校准配置。</li>
+</ul>
+<p>本案例可为未来类似 QCOM 平台音频崩溃问题提供参考，尤其在日志提示 <code>audioserver crash + listAudioPorts error -19</code> 时，建议遇到类似 QCOM 音频初始化失败的情况时，优先从 SELinux 拦截、校准数据路径、HAL 属性配置几个角度逐步排查，避免盲目刷机或硬件更换。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Android/" class="print-no-link">#Android</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>OnePlus 8T音频服务故障深度排查与修复记录</div>
+      <div>http://example.com/2025/03/29/20250330-qcom-audiofix/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Caleb</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年3月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-cc-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/04/18/20250419-node-memory/" title="IBM 堆叠服务器故障处理">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">IBM 堆叠服务器故障处理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/03/17/20250318-human/" title="无知">
+                        <span class="hidden-mobile">无知</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> , © <span id="year"></span> Caleb <script>document.getElementById("year").textContent = new Date().getFullYear();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        StatTrak™ 
+        <span id="busuanzi_value_site_pv"></span>
+         
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
