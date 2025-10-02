@@ -1,0 +1,54 @@
+/* 仅覆盖 ASCII：英文/数字/常用符号走 Courier */
+/* ASCII Regular */
+@font-face {
+  font-family: "CourierLatin";
+  src: local("Courier New"), local("Courier");
+  unicode-range: U+0020-007E;
+  font-weight: 400;
+  font-style: normal;
+}
+/* ASCII Bold（关键：声明 700，指向 Bold 面） */
+@font-face {
+  font-family: "CourierLatin";
+  src: local("Courier New Bold"), local("Courier Bold"), local("Courier New");
+  unicode-range: U+0020-007E;
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+/* 全站正文与标题：ASCII 用 CourierLatin，中文优先等线，其次雅黑/系统无衬线；含 Emoji 回退 */
+html, body, #mount, #app, .content, .post, .page, .markdown-body {
+  font-family:
+    "CourierLatin",
+    /* 中文优先：等线（Windows10/11） */
+    "DengXian", "DengXian Light",
+    /* 兼容：雅黑（旧版/无等线机器） */
+    "Microsoft YaHei UI", "Microsoft YaHei",
+    /* macOS/iOS 中文 */
+    "PingFang SC",
+    /* Linux/跨平台中文 */
+    "Noto Sans CJK SC", "Hiragino Sans GB", "WenQuanYi Micro Hei",
+    /* 系统 UI 无衬线与常见西文字体 */ 
+    system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans",
+    /* Emoji（防豆腐块） */
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    /* 兜底 */
+    sans-serif !important;
+  font-weight: 
+  	600 !important;  /* 400=Regular，500=Medium，700=Bold */
+}
+
+/* 代码块维持等宽 */
+pre, code, kbd, samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+               "Liberation Mono", "Courier New", monospace !important;
+}
+
+/* 图标字体：强制还原，避免被上面的覆盖 */
+.icon, .iconfont, [class^="icon-"], [class*=" icon-"],
+.fa, .fas, .far, .fab, .material-icons {
+  font-family: "iconfont", "Font Awesome 5 Free", "Font Awesome 5 Brands", "Material Icons" !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+}
