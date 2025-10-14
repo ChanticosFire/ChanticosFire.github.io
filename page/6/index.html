@@ -254,6 +254,69 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2024/01/05/20240106-general-badusb/" target="_self">
+          使用badusb绕过粘贴限制
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/05/20240106-general-badusb/" target="_self">
+        <div>
+          obsidian都已经打开了，顺便把前两天的一个小操作写出来。 事情起因是遇到了一个不允许右键及复制粘贴操作的文本框，如果是Web的话一般这种时候就几个操作：停js&#x2F;改css&#x2F;装插件，但如果对方是个应用，又没调试环境，就麻爪了。我遇到的就是这个情况，还好没有啥复制需求，仅需要解决大段英文文本不想手打偷懒粘贴的问题。 果然偷懒是人类进步的原动力啊！ 想了想，要么软件模拟输入法输入
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-01-05 16:00" pubdate>
+              2024-01-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%85%B6%E4%BB%96/">#其他</a>
+            
+              <a href="/tags/Badusb/">#Badusb</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2024/01/05/20240106-general-pain/" target="_self">
           牙疼的一周
         </a>
@@ -469,7 +532,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9D%82%E8%B0%88/" class="category-chain-item">杂谈</a>
+  <a href="/categories/Android/" class="category-chain-item">Android</a>
   
   
 
@@ -530,7 +593,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9D%82%E8%B0%88/" class="category-chain-item">杂谈</a>
+  <a href="/categories/Android/" class="category-chain-item">Android</a>
   
   
 
@@ -591,7 +654,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9D%82%E8%B0%88/" class="category-chain-item">杂谈</a>
+  <a href="/categories/Android/" class="category-chain-item">Android</a>
   
   
 
@@ -678,7 +741,13 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/07/20231208-huawei-raid2.0/" target="_self">
+          <img src="/img/huawei-storage2600-failed-disk.jpg" srcset="/img/loading.gif" lazyload alt="华为与RAID2.0+">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
         <a href="/2023/12/07/20231208-huawei-raid2.0/" target="_self">
@@ -687,7 +756,7 @@
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/07/20231208-huawei-raid2.0/" target="_self">
+      <a class="index-excerpt " href="/2023/12/07/20231208-huawei-raid2.0/" target="_self">
         <div>
           华为与RAID2.0+今天和群友聊天的时候提到了他的一台阵列三天内挂了三块盘导致RAID彻底挂掉，想起来了许久之前搞过的一台华为存储，堪称奇迹。废话不多讲，先上图感受一下。 只能说，相当震撼，虽然已经提前得知了108块盘里坏了24块（实际亮灯27块），但亲眼看到的时候还是感觉到极强的视觉冲击力。 下面细说说这个事由于离职的时候已经将工作文件打包给了同事，这些包含客户信息的文件也都不存在我自己这里了
         </div>
@@ -793,66 +862,7 @@
             
               <a href="/tags/HAM/">#HAM</a>
             
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/05/20231206-general-kdeconnect/" target="_self">
-          kdeconnect的故障排查
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/05/20231206-general-kdeconnect/" target="_self">
-        <div>
-          刚刚遇到一个问题，简单排查之后解决掉了，记录一下。 kalilinux端的kdeconnect打开之后显示为空白页面，编辑本机主机名不生效，排除了Wayland导致的显示问题后，尝试在shell中使用kdeconnect-cli命令查看相关信息，执行kdeconnect-cli --refresh命令刷新设备列表，但出现了如下报错： 1QSocketNotifier: Can only be us
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-05 16:00" pubdate>
-              2023-12-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Linux/">#Linux</a>
+              <a href="/tags/%E4%B8%9A%E4%BD%99%E6%97%A0%E7%BA%BF%E7%94%B5/">#业余无线电</a>
             
           </div>
         
