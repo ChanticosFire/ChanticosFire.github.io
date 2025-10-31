@@ -17,26 +17,32 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="Caleb">
-  <meta name="keywords" content="Other">
+  <meta name="keywords" content="">
   
-    <meta name="description" content="24年开年这一周基本没干啥，平时就是陪女朋友，做做饭。结果从昨天，垂死病中惊坐起，也不知道抽了啥风睡着觉用力咬了一下后槽牙，原先那颗被智齿顶坏补过的磨牙又开始疼了。 从补牙材料掉了之后，这颗歪歪扭扭的牙就开始疼，一周前它刚安生下来算是让我过了个好元旦，结果没高兴几天，从昨天开始疼痛更深，疼到没办法集中注意力做事，去看了一下看情况说是要拔了，约了周一上午去拔牙，当晚又吃顿火锅，吃生菜的时候还把坏牙咬">
+    <meta name="description" content="近期在项目上遇到一个问题，折腾许久，比较棘手，最后以比较简单暴力的方式解决了，做个记录。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="牙疼的一周">
-<meta property="og:url" content="http://example.com/2024/01/05/20240106-general-pain/index.html">
+<meta property="og:title" content="一次疑难杂症的记录">
+<meta property="og:url" content="http://example.com/2025/10/31/20251031-tencentostroubleshooting/index.html">
 <meta property="og:site_name" content="Caleb&#39;s Blog">
-<meta property="og:description" content="24年开年这一周基本没干啥，平时就是陪女朋友，做做饭。结果从昨天，垂死病中惊坐起，也不知道抽了啥风睡着觉用力咬了一下后槽牙，原先那颗被智齿顶坏补过的磨牙又开始疼了。 从补牙材料掉了之后，这颗歪歪扭扭的牙就开始疼，一周前它刚安生下来算是让我过了个好元旦，结果没高兴几天，从昨天开始疼痛更深，疼到没办法集中注意力做事，去看了一下看情况说是要拔了，约了周一上午去拔牙，当晚又吃顿火锅，吃生菜的时候还把坏牙咬">
+<meta property="og:description" content="近期在项目上遇到一个问题，折腾许久，比较棘手，最后以比较简单暴力的方式解决了，做个记录。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-05T08:00:00.000Z">
-<meta property="article:modified_time" content="2025-09-29T07:52:43.135Z">
+<meta property="og:image" content="http://example.com/img/general-linux.png">
+<meta property="article:published_time" content="2025-10-31T04:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-31T04:34:09.840Z">
 <meta property="article:author" content="Caleb">
-<meta property="article:tag" content="其他">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="bonding">
+<meta property="article:tag" content="firmware">
+<meta property="article:tag" content="故障排查">
+<meta property="article:tag" content="硬件">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/general-linux.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>牙疼的一周 - Caleb&#39;s Blog</title>
+  <title>一次疑难杂症的记录 - Caleb&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -226,7 +232,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="牙疼的一周"></span>
+            <span id="subtitle" data-typed-text="一次疑难杂症的记录"></span>
           
         </div>
 
@@ -237,8 +243,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-05 16:00" pubdate>
-          2024年1月5日 下午
+        <time datetime="2025-10-31 12:00" pubdate>
+          2025年10月31日 中午
         </time>
       </span>
     
@@ -249,7 +255,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          489 字
+          2.7k 字
         
       </span>
     
@@ -260,7 +266,7 @@
         
         
         
-          5 分钟
+          23 分钟
         
       </span>
     
@@ -306,15 +312,109 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">牙疼的一周</h1>
+            <h1 id="seo-header">一次疑难杂症的记录</h1>
             
             
               <div class="markdown-body">
                 
-                <p>24年开年这一周基本没干啥，平时就是陪女朋友，做做饭。结果从昨天，垂死病中惊坐起，也不知道抽了啥风睡着觉用力咬了一下后槽牙，原先那颗被智齿顶坏补过的磨牙又开始疼了。</p>
-<p>从补牙材料掉了之后，这颗歪歪扭扭的牙就开始疼，一周前它刚安生下来算是让我过了个好元旦，结果没高兴几天，从昨天开始疼痛更深，疼到没办法集中注意力做事，去看了一下看情况说是要拔了，约了周一上午去拔牙，当晚又吃顿火锅，吃生菜的时候还把坏牙咬了一下，人都麻了。</p>
-<p>辗转反侧一夜难眠，到了今早上还是疼，买药，甲硝唑对乙酰氨基酚头孢克洛，一样两颗放在手里仿佛自己是个药罐子，这时候也不想啥肝肾毒性了，能不牙疼就行，一到这时候就开始敬佩革命先辈，要我疼成那样早啥都招了。刚买完药一个客户工程师又发消息找我，帮忙看一台Oracle存储的问题，勉强集中精神看了看发来的截图，盘柜里能认到盘，Raid组里本应12块盘现在只有11块在还有一块显示缺失，同时另外一个组里有一块状态为已恢复，task里没有在跑，寻摸了一下估计是缓存问题了，要找命令手动把盘踢出去重新加，这会儿牙疼得我实在力有未逮，跟人讲了一下等状态好点帮忙找找看。</p>
-<p>饿了，喝粥。</p>
+                <p>近期在项目上遇到一个问题，折腾许久，比较棘手，最后以比较简单暴力的方式解决了，做个记录。</p>
+<hr>
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>环境是三台 Tencent OS 服务器，各使用一张双口OCP 网卡（100G 端口），为搬迁来的旧机器。原有业务在运行，客户表示已经清配置，要重新部署业务系统。</p>
+<p>服务器配置本身不复杂。客户提供了 bond 配置内容和软件包，理论上虚拟 KVM 接上后配置 bond 并重启 network 即可通讯，然后可传软件包执行初始化配置。结果第一步就翻车——服务器能启动、找到启动项、选择内核后黑屏。</p>
+<hr>
+<h2 id="二、启动问题排查"><a href="#二、启动问题排查" class="headerlink" title="二、启动问题排查"></a>二、启动问题排查</h2><p>起初怀疑虚拟 KVM 有问题，让现场工程师接显示器测试，发现同样黑屏。使用 Alpine Linux 测试则可正常启动。</p>
+<p>查看 GRUB 内容如下：</p>
+<p><img src="/img/tencentos-grub1.png" srcset="/img/loading.gif" lazyload alt="grub内容"></p>
+<p>尝试进入单用户模式仍为黑屏。再次重启并删掉以下字段后，系统可正常输出显示：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">video</span>=vesa:<span class="hljs-literal">off</span> video=efifb:<span class="hljs-literal">off</span><br></code></pre></td></tr></table></figure>
+
+<p>进入系统后执行以下操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">vi /etc/default/grub<br>grub2-mkconfig -o /boot/efi/EFI/tencent/grub.cfg<br>reboot<br></code></pre></td></tr></table></figure>
+
+<p>系统重启成功。</p>
+<hr>
+<h2 id="三、Bond-配置"><a href="#三、Bond-配置" class="headerlink" title="三、Bond 配置"></a>三、Bond 配置</h2><p>按客户提供的配置进行：</p>
+<h3 id="eth0"><a href="#eth0" class="headerlink" title="eth0"></a>eth0</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">DEVICE=eth0<br>TYPE=Ethernet<br>BOOTPROTO=none<br>ONBOOT=<span class="hljs-built_in">yes</span><br>NM_CONTROLLED=no<br>SLAVE=<span class="hljs-built_in">yes</span><br>MASTER=bond1<br></code></pre></td></tr></table></figure>
+
+<h3 id="eth1"><a href="#eth1" class="headerlink" title="eth1"></a>eth1</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">DEVICE=eth1<br>TYPE=Ethernet<br>BOOTPROTO=none<br>ONBOOT=<span class="hljs-built_in">yes</span><br>NM_CONTROLLED=no<br>SLAVE=<span class="hljs-built_in">yes</span><br>MASTER=bond1<br></code></pre></td></tr></table></figure>
+
+<h3 id="bond1"><a href="#bond1" class="headerlink" title="bond1"></a>bond1</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">DEVICE=bond1<br>ONBOOT=<span class="hljs-built_in">yes</span><br>BOOTPROTO=static<br>NM_CONTROLLED=<span class="hljs-built_in">yes</span><br>DELAY=0<br>IPADDR=<span class="hljs-string">&#x27;&#x27;</span><br>NETMASK=<span class="hljs-string">&#x27;&#x27;</span><br>GATEWAY=<span class="hljs-string">&#x27;&#x27;</span><br>BONDING_OPTS=<span class="hljs-string">&#x27;mode=4 miimon=100 lacp_rate=fast xmit_hash_policy=2&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">service network restart<br>ip a<br></code></pre></td></tr></table></figure>
+
+<p>确认 IP 已配置到 bond1 上。ARP 双发正常，无需额外配置。</p>
+<hr>
+<h2 id="四、配置残留问题"><a href="#四、配置残留问题" class="headerlink" title="四、配置残留问题"></a>四、配置残留问题</h2><p>写配置时发现客户声称“重装过”的系统仍保留旧 IP 配置，SSH 配置也监听旧 IP 和高位端口，说明系统并未真正清理干净，给后续排查带来误导。<br>担心的地方在于不知道这个OS有没有做其它部分的深度定制，也不知道旧配置有没有真的清掉，所以联系了客户，但没有得到有效帮助。</p>
+<hr>
+<h2 id="五、异常现象"><a href="#五、异常现象" class="headerlink" title="五、异常现象"></a>五、异常现象</h2><p>三台主机配置一致，但状态如下：</p>
+<table>
+<thead>
+<tr>
+<th>主机</th>
+<th>eth0</th>
+<th>eth1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>server1</td>
+<td>down</td>
+<td>down</td>
+</tr>
+<tr>
+<td>server2</td>
+<td>down → up</td>
+<td>up</td>
+</tr>
+<tr>
+<td>server3</td>
+<td>down</td>
+<td>down</td>
+</tr>
+</tbody></table>
+<p>过一段时间后 server2 的 eth0 也 up，其他两台仍 down。多次重启无效。</p>
+<p>尝试强制速率：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ethtool -s eth0 speed 100000 duplex full autoneg off<br></code></pre></td></tr></table></figure>
+
+<p>无效。端口状态为 <em>unknown</em>，BMC 无报错，硬件状态正常。</p>
+<hr>
+<h2 id="六、逐项排除"><a href="#六、逐项排除" class="headerlink" title="六、逐项排除"></a>六、逐项排除</h2><ol>
+<li><p><strong>配置文件问题</strong><br>检查 <code>/etc/sysconfig/network-scripts/</code> 和 <code>/etc/udev/rules.d/70-*</code> 正常，三台一致，与客户提供无差别。<br> <em><strong>配置文件问题排除</strong></em></p>
+</li>
+<li><p><strong>驱动与固件问题</strong><br>查看dmesg和message没有发现异常，和客户确认了其它相同项目配置、驱动、固件一致。<br> <em><strong>驱动与固件问题排除（根据后面结果来看，固件存疑）</strong></em></p>
+</li>
+<li><p><strong>配置与系统问题</strong><br>使用 Alpine Linux 临时引导，端口状态也是down，模块不亮，说明和系统无关。<br>使用客户提供的Tencentos镜像重装server1，仍down，说明和系统内残留配置无关。<br> <em><strong>配置与系统问题排除</strong></em></p>
+</li>
+<li><p><strong>物理线缆与模块问题</strong><br>测试把server2的ocp网卡和server1交换，交换后状态如下：<br>server1开始只up eth1，约6小时后，eth0也up；<br>server2 eth0&#x2F;1 down</p>
+<p>症状表现是跟着网卡走，认为就是物理状态问题，交换机侧查看光衰，发现down端口有一个光衰太高，现场安排使用mpo清洁棒进行了清洁，略有改善，但仍无法链接。此时怀疑对象是模块和线都被污染，于是再次安排换模块换线，未解决。<br>这个时候已经怀疑是现场人员操作手法问题，是不是有不好的习惯会碰到接头，安排了另一位布线老手去现场重新飞线，飞线换模块后，server3的光衰降低，端口也起来了，但在没做任何操作的情况下，其他又down了，非常诡异。但经过飞线测试，线缆的状态问题已排除<br> <em><strong>物理模块与线缆问题排除</strong></em></p>
+</li>
+<li><p><strong>自环测试</strong><br>再次尝试自环，发现自环之后所有端口都能立即up，由此又把网卡&#x2F;模块的物理状态问题排除。。<br> <em><strong>物理层问题排除</strong></em></p>
+</li>
+<li><p><strong>自动协商测试</strong><br>最后又回到交换机端，再次检查端口速率协商，lacp等，均正常，但现在开始怀疑到协商问题，回到server端，想起来之前强制指定过速率，ethtool中看到Auto-negotiation: off，想尝试一下开启自动协商，执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ethtool -s eth1 autoneg on<br></code></pre></td></tr></table></figure>
+<p>端口当场 down，每一台主机都是这样，改回off也需长时间等待才能 up。，而开启自动协商的端口，等待几小时后也没有up。<br> <em><strong>协商机制异常</strong></em></p>
+</li>
+</ol>
+<hr>
+<h2 id="七、最终处理"><a href="#七、最终处理" class="headerlink" title="七、最终处理"></a>七、最终处理</h2><p><strong>目前情况是：</strong><br>配置文件正常<br>驱动与固件正常<br>系统正常<br>物理状态正常<br>协商失败</p>
+<p>鉴于目前的复杂情况，客户安排厂商工程师上门更换网卡尝试。<br>厂商工程师上门，尝试收集日志时，又遇到了以下情况：</p>
+<ul>
+<li>Boot U 盘无法启动，改 BIOS 为 Legacy 后卡死；  </li>
+<li>拔电 30 秒、长按电源键，上电仍失败；  </li>
+<li>拆机取下 CMOS 电池放电后恢复；  </li>
+<li>收集系统与 BMC 日志包。</li>
+</ul>
+<p>次日更换新网卡后，端口立即点亮，状态 up。</p>
+<p>进入系统，查看新网卡固件版本，发现较新一些，考虑到三张网卡同时坏的可能性其实并不大，我个人倾向于是固件版本不匹配（即使客户说其它项目都是相同的，但根据客户在这项目所有事情中表现出的不专业性，提供的手册的错漏百出来看，已经不可信了）。</p>
+<p><strong>固件信息如下：</strong></p>
+<p><strong>旧网卡</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">driver</span>: mlx5_core<br><span class="hljs-attribute">version</span>: <span class="hljs-number">5</span>.<span class="hljs-number">1</span>-<span class="hljs-number">2</span>.<span class="hljs-number">5</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">firmware</span>-version: <span class="hljs-number">22</span>.<span class="hljs-number">33</span>.<span class="hljs-number">1048</span> (MT_0000000327)<br></code></pre></td></tr></table></figure>
+
+<p><strong>新网卡</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">driver</span>: mlx5_core<br><span class="hljs-attribute">version</span>: <span class="hljs-number">5</span>.<span class="hljs-number">1</span>-<span class="hljs-number">2</span>.<span class="hljs-number">5</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">firmware</span>-version: <span class="hljs-number">22</span>.<span class="hljs-number">37</span>.<span class="hljs-number">1014</span> (MT_0000000327)<br></code></pre></td></tr></table></figure>
+
+
+<p>另外，更换网卡后，由于发生了配置重载，所以自动协商状态也是on，可以正常协商，此前一开自动协商就down明显也是有问题的。<br>更换新卡后恢复正常，自动协商状态为 <code>on</code>，bond 通讯稳定。</p>
 
                 
               </div>
@@ -333,7 +433,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9D%82%E8%B0%88/" class="category-chain-item">杂谈</a>
+  <a href="/categories/Linux/" class="category-chain-item">Linux</a>
   
   
 
@@ -348,7 +448,15 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E5%85%B6%E4%BB%96/" class="print-no-link">#其他</a>
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+        <a href="/tags/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/" class="print-no-link">#故障排查</a>
+      
+        <a href="/tags/%E7%A1%AC%E4%BB%B6/" class="print-no-link">#硬件</a>
+      
+        <a href="/tags/bonding/" class="print-no-link">#bonding</a>
+      
+        <a href="/tags/firmware/" class="print-no-link">#firmware</a>
       
     </div>
   
@@ -360,8 +468,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>牙疼的一周</div>
-      <div>http://example.com/2024/01/05/20240106-general-pain/</div>
+      <div>一次疑难杂症的记录</div>
+      <div>http://example.com/2025/10/31/20251031-tencentostroubleshooting/</div>
     </div>
     <div class="license-meta">
       
@@ -373,7 +481,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年1月5日</div>
+          <div>2025年10月31日</div>
         </div>
       
       
@@ -411,18 +519,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/06/20240107-oracle-fsdisk-2/" title="Oracle FS1-2 外部驱动器">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Oracle FS1-2 外部驱动器</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/01/05/20240106-general-uevr/" title="颠覆性的UEVR">
-                        <span class="hidden-mobile">颠覆性的UEVR</span>
+                      <a href="/2025/10/13/20251013-overtimew/" title="加班">
+                        <span class="hidden-mobile">加班</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
