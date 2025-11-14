@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/general-linux.png">
 <meta property="article:published_time" content="2025-10-31T04:00:00.000Z">
-<meta property="article:modified_time" content="2025-10-31T04:40:37.344Z">
+<meta property="article:modified_time" content="2025-11-14T05:07:56.003Z">
 <meta property="article:author" content="Caleb">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="bonding">
@@ -255,7 +255,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.7k 字
+          3.4k 字
         
       </span>
     
@@ -266,7 +266,7 @@
         
         
         
-          23 分钟
+          28 分钟
         
       </span>
     
@@ -396,7 +396,7 @@
 </li>
 </ol>
 <hr>
-<h2 id="七、最终处理"><a href="#七、最终处理" class="headerlink" title="七、最终处理"></a>七、最终处理</h2><p><strong>目前情况是：</strong><br>配置文件正常<br>驱动与固件正常<br>系统正常<br>物理状态正常<br>协商失败</p>
+<h2 id="七、更换网卡"><a href="#七、更换网卡" class="headerlink" title="七、更换网卡"></a>七、更换网卡</h2><p><strong>目前情况是：</strong><br>配置文件正常<br>驱动与固件正常<br>系统正常<br>物理状态正常<br>协商失败</p>
 <p>鉴于目前的复杂情况，客户安排厂商工程师上门更换网卡尝试。<br>厂商工程师上门，尝试收集日志时，又遇到了以下情况：</p>
 <ul>
 <li>Boot U 盘无法启动，改 BIOS 为 Legacy 后卡死；  </li>
@@ -415,6 +415,28 @@
 
 
 <p>另外，更换网卡后，由于发生了配置重载，所以自动协商状态也是on，可以正常协商，此前一开自动协商就down明显也是有问题的。<br>更换新卡后恢复正常，自动协商状态为 <code>on</code>，bond 通讯稳定。</p>
+<h2 id="八、最终处理"><a href="#八、最终处理" class="headerlink" title="八、最终处理"></a>八、最终处理</h2><ol>
+<li><p><strong>降级固件：</strong><br> 由于新网卡的固件版本较高，不符合交付需求，所以需要降级处理，这个时候已经猜测到降级会导致网口down了，提出之后客户仍表示高版本固件无法适配后续流程，必须降级</p>
+<p> 安装mft工具：</p>
+</li>
+</ol>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">tar -xvf mft-XX<span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.XX-x86_64-rpm</span><span class="hljs-selector-class">.tgz</span><br>./install<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--without-kernel</span><br>mst start<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">烧录并重启：
+</code></pre>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">flint</span> -d <span class="hljs-number">41</span>:<span class="hljs-number">0</span>.<span class="hljs-number">0</span> -i 固件文件名.bin burn<br><span class="hljs-attribute">reboot</span><br></code></pre></td></tr></table></figure>
+
+<p>然后服务器果不其然的连不上了。。</p>
+<ol start="2">
+<li><p><strong>恢复处理</strong><br> 找三线，收日志，sysinfo 和mstdump，结论是”网卡端口没有up事件发生，一直处于polling状态，这一般是cable&#x2F;模块没有插好、或物理link协商失败造成的。”</p>
+<p> 查看模块信息：</p>
+ <figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs brainfuck"><span class="hljs-comment">mlxlink</span> <span class="hljs-literal">-</span><span class="hljs-comment">d 41:00</span><span class="hljs-string">.</span><span class="hljs-comment">0</span> <span class="hljs-literal">-</span><span class="hljs-comment">m</span> <span class="hljs-literal">--</span><span class="hljs-comment">cable</span> <span class="hljs-literal">--</span><span class="hljs-comment">dump</span> <span class="hljs-literal">--</span><span class="hljs-comment">show_serdes_tx</span> <span class="hljs-literal">--</span><span class="hljs-comment">rx_fec_histogram</span> <span class="hljs-literal">--</span><span class="hljs-comment">show_histogram</span> <span class="hljs-literal">-</span><span class="hljs-comment">c</span><br></code></pre></td></tr></table></figure>
+<p> 发现输出中模块为指定厂商，但芯片型号非此前业务测试使用的，应该是厂商的不同代工厂货不同批次使用芯片不同</p>
+ <figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs delphi">Vendor <span class="hljs-keyword">Name</span> HISILICON<br>Vendor PartNumber OM3538SX101-H3C<br></code></pre></td></tr></table></figure>
+<p> 确认后，更换成光迅的模块，端口UP，复测正常</p>
+</li>
+</ol>
+<h2 id="九、总结"><a href="#九、总结" class="headerlink" title="九、总结"></a>九、总结</h2><p>一个模块型号与驱动不匹配引起的问题，表现在了全链路上，期间产生各种复杂现象，最终还是回归到了最简单的物理问题。</p>
+<p>许多复杂故障都是这样，苦寻许久，最后回到最简单的部分。</p>
 
                 
               </div>
@@ -651,7 +673,7 @@
     
     
       <span id="busuanzi_container_site_uv" style="display: none">
-        总访客数 
+        独立访客 
         <span id="busuanzi_value_site_uv"></span>
          人
       </span>
