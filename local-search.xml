@@ -4,6 +4,37 @@
   
   
   <entry>
+    <title>WinHello故障解决</title>
+    <link href="/2026/01/17/20260117-winlogontroubleshooting/"/>
+    <url>/2026/01/17/20260117-winlogontroubleshooting/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Windows-Hello-PIN-锁死导致无法密码登录的完整排障记录"><a href="#Windows-Hello-PIN-锁死导致无法密码登录的完整排障记录" class="headerlink" title="Windows Hello &#x2F; PIN 锁死导致无法密码登录的完整排障记录"></a>Windows Hello &#x2F; PIN 锁死导致无法密码登录的完整排障记录</h1><p><strong>——一次微软安全策略BUG导致无法登录的恢复实录</strong></p><p>全文由我撰写草稿并由ChatGPT优化排版</p><hr><h2 id="一、问题起点"><a href="#一、问题起点" class="headerlink" title="一、问题起点"></a>一、问题起点</h2><p>背景：<br>SP8由于电池衰减，在保修期结束之前，申请了一次质保，正常来讲MS会直接给换一台官翻机，硬盘不返还，在换新之前我把自己的1TB SSD拆下，换回了原装256硬盘，计划在换新之后装回硬盘继续使用。</p><p>质保流程完成后，收到新机，换回我的1TB SSD，问题发生了，由于硬件发生变化，设备不再被信任，输入PIN登录要求重置PIN，但无法重置和登录……</p><p>设备：Surface  Pro8</p><p>系统：Windows（Microsoft 账户）  </p><p>用户结构：</p><ul><li><code>Administrator</code>（本地内置管理员，禁用状态）</li><li><code>admin</code>（日常主用的Microsoft 账户，目标用户，<strong>无法登录</strong>）</li></ul><h3 id="核心异常现象"><a href="#核心异常现象" class="headerlink" title="核心异常现象"></a>核心异常现象</h3><p>在 <code>admin</code> 用户上：</p><ul><li><p>登录页 <strong>只显示</strong></p><ul><li><p>Windows Hello 人脸</p></li><li><p>PIN</p></li></ul></li><li><p>由于我日常使用启用了Win Hello，所以<strong>完全没有“密码登录”入口</strong></p></li><li><p>登录行为表现：</p><ul><li><p>人脸识别成功 → 闪一下 → 回到登录页</p></li><li><p>PIN 提示需要重置 &#x2F; 新建 → 点击后 <strong>转圈，无窗口、无报错</strong></p></li></ul></li><li><p>安全模式：</p><ul><li>仍然要求 PIN，<strong>不给密码框</strong></li></ul></li></ul><p>结论（当时尚未完全确认）：</p><blockquote><p>登录 UI 已被 Windows Hello 绑定<br>但 Hello 自身组件已经不可用<br>→ 形成<strong>死锁态</strong></p></blockquote><p>所以我的目的就是，移除Win hello或直接暴露密码框，登录回原系统。</p><hr><h2 id="二、第一阶段：确认「不是简单权限-UI-问题」"><a href="#二、第一阶段：确认「不是简单权限-UI-问题」" class="headerlink" title="二、第一阶段：确认「不是简单权限 &#x2F; UI 问题」"></a>二、第一阶段：确认「不是简单权限 &#x2F; UI 问题」</h2><h3 id="1-通过-PE-获取登录页-NT-权限-Shell，验证是否为-UI-层受限"><a href="#1-通过-PE-获取登录页-NT-权限-Shell，验证是否为-UI-层受限" class="headerlink" title="1. 通过 PE 获取登录页 NT 权限 Shell，验证是否为 UI 层受限"></a>1. 通过 PE 获取登录页 NT 权限 Shell，验证是否为 UI 层受限</h3><p>首先进入 <strong>PE 环境</strong>，通过常规方式：</p><ul><li><p>使用 <code>cmd</code> 替换无障碍程序<code>utilman</code>获取提权cmd</p></li><li><p>在 <strong>Windows 登录页</strong> 点击无障碍拉起 <strong>NT AUTHORITY\SYSTEM 权限的 cmd</strong></p></li></ul><blockquote><p>如果是MS账号关联导致的普通用户权限不足 &#x2F; UI 被策略隐藏，<br>那么在 <strong>NT 权限</strong> 下应当可以直接解除。</p></blockquote><hr><h3 id="2-在-NT-权限-Shell-中修改组策略，尝试暴露密码登录入口（失败）"><a href="#2-在-NT-权限-Shell-中修改组策略，尝试暴露密码登录入口（失败）" class="headerlink" title="2. 在 NT 权限 Shell 中修改组策略，尝试暴露密码登录入口（失败）"></a>2. 在 NT 权限 Shell 中修改组策略，尝试暴露密码登录入口（失败）</h3><p>在登录页的 <strong>NT 权限 cmd</strong> 中：</p><ul><li><p>直接启动 <code>gpedit.msc</code></p></li><li><p>修改以下策略：</p></li></ul><h4 id="2-1-暴露用户切换入口"><a href="#2-1-暴露用户切换入口" class="headerlink" title="2.1 暴露用户切换入口"></a>2.1 暴露用户切换入口</h4><ul><li><p><strong>计算机配置 → 管理模板 → 系统 → 登录</strong></p></li><li><p>将<br>  <strong>“隐藏快速用户切换的入口”</strong><br>  设置为 <strong>“已禁用”</strong></p></li></ul><blockquote><p>明确暴露“切换用户”，排除“当前登录上下文被强制绑定”的可能</p></blockquote><hr><h4 id="2-2-禁用-Windows-Hello-PIN-强制策略"><a href="#2-2-禁用-Windows-Hello-PIN-强制策略" class="headerlink" title="2.2 禁用 Windows Hello &#x2F; PIN 强制策略"></a>2.2 禁用 Windows Hello &#x2F; PIN 强制策略</h4><p>在同一策略树下，执行：</p><ul><li><p>禁用 <strong>Windows Hello</strong></p></li><li><p>禁用 <strong>“仅允许使用 PIN 登录”</strong>（其实记不清名字了，是这个作用的策略）</p></li></ul><p>完成后重启。</p><h5 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h5><ul><li><p>登录页状态 <strong>完全无变化</strong></p></li><li><p>目标用户 <strong>admin</strong>：</p><ul><li><p>仍然只有 <strong>Windows Hello &#x2F; PIN</strong></p></li><li><p><strong>无密码输入框</strong></p></li></ul></li></ul><p>结论：</p><blockquote><p>即使在 NT 权限下修改本地组策略，<br><strong>也无法改变 admin 用户的登录方式</strong></p><p>→ 登录方式已不在 UI &#x2F; GPO 层控制</p></blockquote><hr><h2 id="三、第二阶段：尝试从-Administrator-用户侧进行干预"><a href="#三、第二阶段：尝试从-Administrator-用户侧进行干预" class="headerlink" title="三、第二阶段：尝试从 Administrator 用户侧进行干预"></a>三、第二阶段：尝试从 Administrator 用户侧进行干预</h2><h3 id="1-在-NT-权限-Shell-中启用内置-Administrator（遇到权限差异）"><a href="#1-在-NT-权限-Shell-中启用内置-Administrator（遇到权限差异）" class="headerlink" title="1. 在 NT 权限 Shell 中启用内置 Administrator（遇到权限差异）"></a>1. 在 NT 权限 Shell 中启用内置 Administrator（遇到权限差异）</h3><p>思路转变：</p><blockquote><p>既然目标用户 admin 已被锁死，<br>那么先进入 <strong>Administrator</strong>，再进行修改。</p></blockquote><hr><h4 id="1-1-尝试使用-net-user-启用-Administrator（失败）"><a href="#1-1-尝试使用-net-user-启用-Administrator（失败）" class="headerlink" title="1.1 尝试使用 net user 启用 Administrator（失败）"></a>1.1 尝试使用 net user 启用 Administrator（失败）</h4><p>在 <strong>NT 权限 cmd</strong> 中执行：</p><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">net <span class="hljs-keyword">user</span> <span class="hljs-title">administrator</span> /active:yes <br>net <span class="hljs-keyword">user</span> <span class="hljs-title">administrator</span><br></code></pre></td></tr></table></figure><p>结果：</p><ul><li><p><code>Active</code> 状态仍显示 <strong>No</strong></p></li><li><p>命令未报错，但<strong>未生效</strong></p></li></ul><p>说明：</p><blockquote><p>即便是 SYSTEM &#x2F; NT 权限 cmd，<br>在该环境下 <strong>net user 行为受限</strong></p></blockquote><hr><h4 id="1-2-使用-PowerShell-成功启用-Administrator"><a href="#1-2-使用-PowerShell-成功启用-Administrator" class="headerlink" title="1.2 使用 PowerShell 成功启用 Administrator"></a>1.2 使用 PowerShell 成功启用 Administrator</h4><p>切换至 <strong>PowerShell</strong>，执行：</p><p><code>Enable-LocalUser -Name &quot;Administrator&quot;</code></p><p>结果：</p><ul><li><p>Administrator 成功启用</p></li><li><p>可在登录页切换并进入系统</p></li></ul><hr><h2 id="四、第三阶段：在-Administrator-下直接修改目标用户（失败）"><a href="#四、第三阶段：在-Administrator-下直接修改目标用户（失败）" class="headerlink" title="四、第三阶段：在 Administrator 下直接修改目标用户（失败）"></a>四、第三阶段：在 Administrator 下直接修改目标用户（失败）</h2><h3 id="1-使用-net-user-修改-admin（失败，8646）"><a href="#1-使用-net-user-修改-admin（失败，8646）" class="headerlink" title="1. 使用 net user 修改 admin（失败，8646）"></a>1. 使用 net user 修改 admin（失败，8646）</h3><p>进入 <strong>Administrator 桌面</strong>后，尝试：<br><code>net user admin *</code></p><p>结果：</p><ul><li><p>返回错误 <strong>8646</strong></p></li><li><p>提示无权限 &#x2F; 操作不允许</p></li></ul><p>回到 <strong>登录页 NT Shell</strong> 再次尝试：</p><ul><li><strong>同样失败</strong></li></ul><p>结论非常明确：</p><blockquote><p><code>admin</code> 为 <strong>Microsoft 账户</strong></p><ul><li><p>不受 <code>net user</code> 管理</p></li><li><p>不受 Administrator &#x2F; NT 权限直接控制</p></li></ul></blockquote><hr><h3 id="2-注册表层面针对-SID-LogonUI-的修改（仅对-Administrator-生效）"><a href="#2-注册表层面针对-SID-LogonUI-的修改（仅对-Administrator-生效）" class="headerlink" title="2. 注册表层面针对 SID &#x2F; LogonUI 的修改（仅对 Administrator 生效）"></a>2. 注册表层面针对 SID &#x2F; LogonUI 的修改（仅对 Administrator 生效）</h3><p>接下来尝试的方向是：</p><ul><li><p>定位 <code>admin</code> 的 SID</p></li><li><p>修改：</p><ul><li><p><code>Authentication</code></p></li><li><p><code>LogonUI</code></p></li><li><p><code>Credential Provider</code> 相关键值</p></li></ul></li><li><p>目标是<strong>强制暴露密码登录框</strong></p></li></ul><p>结果：</p><ul><li><p><strong>Administrator 用户</strong>：</p><ul><li><p>Windows Hello &#x2F; PIN 可以被成功关闭</p></li><li><p>密码登录可见、可用</p></li></ul></li><li><p><strong>目标用户 admin</strong>：</p><ul><li><p><strong>完全无变化</strong></p></li><li><p>仍为 Hello &#x2F; PIN 页面</p></li></ul></li></ul><p>结论：</p><blockquote><p>目标用户的登录链路 不属于常规注册表控制路径**</p></blockquote><hr><h2 id="五、第四阶段：参考社区方案，尝试-WinRE-下对目标用户操作（失败）"><a href="#五、第四阶段：参考社区方案，尝试-WinRE-下对目标用户操作（失败）" class="headerlink" title="五、第四阶段：参考社区方案，尝试 WinRE 下对目标用户操作（失败）"></a>五、第四阶段：参考社区方案，尝试 WinRE 下对目标用户操作（失败）</h2><h3 id="1-尝试社区方案《在使用-PIN-登录不可用时开启密码登录》"><a href="#1-尝试社区方案《在使用-PIN-登录不可用时开启密码登录》" class="headerlink" title="1. 尝试社区方案《在使用 PIN 登录不可用时开启密码登录》"></a>1. 尝试社区方案《在使用 PIN 登录不可用时开启密码登录》</h3><p>参考帖子：<br><a href="https://bbs.pcbeta.com/viewthread-2047506-1-1.html">https://bbs.pcbeta.com/viewthread-2047506-1-1.html</a></p><p>按照该方案实施：</p><ul><li><p>进入 <strong>WinRE CMD</strong></p></li><li><p>在登录页选择目标用户（admin）</p></li><li><p>输入 Microsoft 账户密码</p></li><li><p>加载 <code>SOFTWARE</code> Hive 并修改</p></li></ul><hr><h4 id="实际执行结果："><a href="#实际执行结果：" class="headerlink" title="实际执行结果："></a>实际执行结果：</h4><ul><li><p>成功进入 WinRE CMD</p></li><li><p>选择目标用户 admin</p></li><li><p>尝试加载 <code>SOFTWARE</code> Hive 时：</p><ul><li>提示 <strong>文件被占用</strong></li></ul></li><li><p>尝试通过非常规方式提权 &#x2F; 解除占用：</p><ul><li><strong>仍被占用</strong></li></ul></li></ul><p>结论：</p><blockquote><p>即使进入 WinRE，<br><strong>MSA 用户相关 Hive 在该阶段仍被锁定</strong></p></blockquote><hr><h2 id="六、第五阶段：清除-PIN-数据（失败）"><a href="#六、第五阶段：清除-PIN-数据（失败）" class="headerlink" title="六、第五阶段：清除 PIN 数据（失败）"></a>六、第五阶段：清除 PIN 数据（失败）</h2><h3 id="1-删除-NGC-目录，验证是否为-PIN-数据阻塞"><a href="#1-删除-NGC-目录，验证是否为-PIN-数据阻塞" class="headerlink" title="1. 删除 NGC 目录，验证是否为 PIN 数据阻塞"></a>1. 删除 NGC 目录，验证是否为 PIN 数据阻塞</h3><p>回到登录页的 <strong>NT 权限 Shell</strong>，删除如下文件：</p><p><code>C:\Windows\ServiceProfiles\LocalService\AppData\Local\Microsoft\Ngc</code></p><p>结果：</p><ul><li><p>PIN 被清空</p></li><li><p>目标用户登录页变为：</p><blockquote><p><strong>“需要创建 PIN”</strong></p></blockquote></li></ul><p>但：</p><ul><li><p>点击“创建 PIN”</p></li><li><p>仍然 <strong>转圈</strong></p></li><li><p>无窗口、无报错</p></li></ul><p>结论：</p><blockquote><p>NGC 只是 PIN 数据<br><strong>不是登录方式选择权本身</strong></p></blockquote><hr><h2 id="七、第六阶段：放弃“暴露密码框”，改为“绕过登录选择”（失败）"><a href="#七、第六阶段：放弃“暴露密码框”，改为“绕过登录选择”（失败）" class="headerlink" title="七、第六阶段：放弃“暴露密码框”，改为“绕过登录选择”（失败）"></a>七、第六阶段：放弃“暴露密码框”，改为“绕过登录选择”（失败）</h2><h3 id="1-多次修改-HKLM-下注册表，确认无效"><a href="#1-多次修改-HKLM-下注册表，确认无效" class="headerlink" title="1. 多次修改 HKLM 下注册表，确认无效"></a>1. 多次修改 HKLM 下注册表，确认无效</h3><p>此后尝试：</p><ul><li><p>多个 <code>HKLM</code> 下与登录、认证、Hello 相关的键</p></li><li><p>均对 <strong>admin 用户不生效</strong></p></li></ul><p>此时可以确认：</p><blockquote><p><strong>继续尝试“让系统给密码框”是死路</strong></p></blockquote><hr><h2 id="八、最终方案：AutoAdminLogon-绕过登录选择（成功）"><a href="#八、最终方案：AutoAdminLogon-绕过登录选择（成功）" class="headerlink" title="八、最终方案：AutoAdminLogon 绕过登录选择（成功）"></a>八、最终方案：AutoAdminLogon 绕过登录选择（成功）</h2><h3 id="1-思路转变（关键）"><a href="#1-思路转变（关键）" class="headerlink" title="1. 思路转变（关键）"></a>1. 思路转变（关键）</h3><p>不再尝试：</p><ul><li><p>暴露密码框</p></li><li><p>修复 Hello</p></li><li><p>干预 Credential Provider</p></li></ul><p>而是：</p><blockquote><p><strong>让 Winlogon 直接完成登录</strong></p></blockquote><hr><h3 id="2-通过注册表配置-AutoAdminLogon"><a href="#2-通过注册表配置-AutoAdminLogon" class="headerlink" title="2. 通过注册表配置 AutoAdminLogon"></a>2. 通过注册表配置 AutoAdminLogon</h3><p>在 <strong>Administrator</strong> 下：</p><p>路径：</p><p><code>**HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon**</code></p><p>配置：</p><table><thead><tr><th>键名</th><th>类型</th><th>值</th></tr></thead><tbody><tr><td>AutoAdminLogon</td><td>字符串值</td><td>1</td></tr><tr><td>DefaultUserName</td><td>字符串值</td><td>admin（目标用户名）</td></tr><tr><td>DefaultPassword</td><td>字符串值</td><td>明文密码</td></tr></tbody></table><p>重启。</p><hr><h3 id="3-结果"><a href="#3-结果" class="headerlink" title="3. 结果"></a>3. 结果</h3><ul><li><p>系统 <strong>直接登录 admin</strong></p></li><li><p>完全绕过：</p><ul><li><p>Windows Hello</p></li><li><p>PIN</p></li><li><p>登录 UI</p></li></ul></li><li><p>用户态完整、数据未受损</p></li></ul><hr><h2 id="九、后续验证"><a href="#九、后续验证" class="headerlink" title="九、后续验证"></a>九、后续验证</h2><ul><li><p>成功进入系统后：</p><ul><li><p>手动重新创建 PIN</p></li><li><p>重新配置人脸识别</p></li><li><p>删除修改和新建的注册表条目</p></li></ul></li><li><p>重启复测：</p><ul><li><p>登录正常</p></li><li><p>Hello &#x2F; PIN 功能恢复可用</p></li></ul></li></ul><hr><h2 id="十、问题定性与结论"><a href="#十、问题定性与结论" class="headerlink" title="十、问题定性与结论"></a>十、问题定性与结论</h2><p>本次问题并非权限、策略或配置错误，而更可能是 <strong>Microsoft 账户（MSA）与 Windows Hello 在 PIN 重置流程中的实现缺陷</strong>。</p><p>在目标用户 <code>admin</code> 上，点击 <strong>重置 &#x2F; 修改 PIN</strong> 时，系统<strong>未拉起 Microsoft 账户验证弹窗</strong>，但登录状态已被推进至 <strong>“仅允许通过 Windows Hello 登录”</strong>。由此形成死锁：</p><blockquote><p>系统要求使用 Hello → Hello 又依赖 PIN &#x2F; MSA 验证 →<br>验证流程未被调用 → 登录无法继续，也无法回退到密码。</p></blockquote><p>在该状态下：</p><ul><li><p>Password Credential Provider 不再被枚举</p></li><li><p>组策略、注册表、WinRE、NT 权限修改均对目标用户无效</p></li><li><p>网上常见“恢复密码登录”的通用方案不再适用</p></li></ul><p>值得讽刺的是，微软的这类安全设置并未真正阻止任何具备技术能力的访问行为：在整个过程中，我可以通过完整的渗透测试手段获取系统内全部数据，却唯独无法以“合法用户”的身份进入自己的桌面进行正常使用。</p><p>最终解决方式并非“暴露密码框”，而是<strong>绕过登录选择流程本身</strong>：</p><blockquote><p><strong>通过 AutoAdminLogon 直接由 Winlogon 使用明确凭据完成登录，避开已进入死锁态的 Windows Hello 登录链路。</strong></p></blockquote><p>这是在不破坏用户态数据前提下，<strong>唯一可控且可逆的解法</strong>。</p><hr><h2 id="十一、尾声"><a href="#十一、尾声" class="headerlink" title="十一、尾声"></a>十一、尾声</h2><p>这篇blog写下，也希望能帮助到像我一样，被微软的各式各样bug坑害的用户，把我全部的错误尝试写下，也是希望能帮助其他人避免一些错误操作或从中发现更有效的解法。</p><p>最后回到那句经典的话：你可能是正版软件的受害者。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>技术</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>故障排查</tag>
+      
+      <tag>Windows</tag>
+      
+      <tag>Microsoft</tag>
+      
+      <tag>Surface</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>一次疑难杂症的记录</title>
     <link href="/2025/10/31/20251031-tencentostroubleshooting/"/>
     <url>/2025/10/31/20251031-tencentostroubleshooting/</url>
@@ -787,11 +818,11 @@
   
   
   <entry>
-    <title>关于睡眠障碍的旧笔记</title>
-    <link href="/2024/03/29/20240330-general-oldnote1/"/>
-    <url>/2024/03/29/20240330-general-oldnote1/</url>
+    <title>过去的梦</title>
+    <link href="/2024/03/29/20240330-general-oldnote2/"/>
+    <url>/2024/03/29/20240330-general-oldnote2/</url>
     
-    <content type="html"><![CDATA[<p>在便签中找到了几段关于过去经历的睡眠障碍的笔记。<br>如果你也有睡眠障碍的经历，不建议看后续内容，因为这可能会导致再次遭遇睡眠障碍。</p><hr><p>醒来，以为自己醒了，仔细觉察了一下是在梦里，能感觉到自己躺在床上，能感觉到身体各个部位，但是除了呼吸之外几乎都无法控制，努力试图脱离这层梦境，想要动手指或者睁开眼，极其沉重，只能移动一点点，嘴和眼皮都不能打开，尝试移动某个部位之后就被彻底禁锢了，通常这样之后呼吸也开始困难，能感觉到咽喉也无法打开，所以这种清醒的梦境里最怕的就是自己失去对呼吸的控制，总感觉万一失败了就憋死了，每次都是用力争夺回身体控制权，很累。<br>刚刚这次，努力挣扎了很久才真正清醒过来想要记录下来，没想到突然又睡着了又进入一个这样的梦中，这次趁着刚刚开始做梦努力翻了一下身体，又醒过来了。</p><p>2020年5月</p><hr><p>趴桌子上睡觉 大概睡了十分钟 醒来</p><p>继续睡 此次大约十五分钟</p><p>梦到自己在睡觉 感觉睡得太久了 想要醒来但是做不到 有人走了过来 我在努力试图动手指 抠住了键盘空格键 想要用力起身 起不来 不知道怎么突然就醒来了能动了 很累 喝了一口水</p><p>趴下继续睡 重复上次梦境 手机响了 想起来接电话 起不来 听到有人在喊是谁的电话在响 继续挣扎想要起来 突然想到是不是要放松才能醒来 于是深呼吸告诉自己要醒来 没有用 仍然是不知道怎样突然又醒来了 赶在对方挂断电话之前接了电话</p><p>再次醒来 发现现在才是现实</p><p>拿杯子喝了一口水 很虚幻的感觉 在梦里这杯水已经被喝完了 凉白开滑过喉咙的感觉无比真实</p><p>2020年8月27日</p>]]></content>
+    <content type="html"><![CDATA[<p>聊完不好的来聊点好的，同样摘自旧便签内容。</p><hr><ol><li></li></ol><p>2021.05.29</p><p>梦到了特别特别大的月亮，我在家里吃饭，出来看到月亮从云层里钻出来又藏进去，呆呆的站在院子中间看，老爸不停的喊我回来吃饭，我还在看月亮，无比的清晰，每一片月海都清晰可见。拿出手机拍照要留着给你看，相机里的月亮变得更大更清晰了，就像在网上看到过的所有超级月亮一样，高挂半空，挂在建筑或者一棵树的半边，仿佛伸手就能够到。</p><hr><ol start="2"><li></li></ol><p>2021.08.29</p><p>后来才知道这个梦的设定和临高启明不谋而合了</p><p>和一位朋友(不知道是谁)穿越回了唐代的长安，准备在某条街上开家面馆作为起步，去另一家店吃了一碗面片汤之后，对门的来砸场子了，这时候我后面突然举起来一面旗：45000人</p><p>嗯，我也是这么才知道我还有四万五千人的，他们都是一起过来的，不仅是士兵的身份，各自也都有自己的专长。我们先从面馆起步，慢慢地聚集起来然后发展，找了一片很大的荒地开始搭建各种基础设施，大家贡献自己的力量来发展工业，在海边养了一条鲸鱼用来做天气预报，时间慢慢地来到明朝(我们怎么还没死)，工业已经很发达了，我想到我们要应对接下来西方国家的传道士带来的文化入侵和接下来的战争，于是开始发展科技，发射了一架表面上全是各种裸露的金属管的火箭，这个时候我被不知道是皇帝还是哪个敌对势力的人抓走了，逃离的过程中突然意识到我好像在做梦？于是开始蹬着墙滑墙跑路，顺便给自己开了个无敌…</p><p>逃出去之后我来到海边，去看那只给我们提供天气预报的鲸鱼，它头顶上长了一个类似于鮟鱇鱼那样的灯笼，用来观测天气然后走上案报告给观察人员…而我不知道它会上岸，被吓到了。</p><p>再接下来好像我们就进入了原子时代，到处都是充斥着苏式粗糙感的科技成果，后来就记不清了。</p><hr><ol start="3"><li></li></ol><p>2021.11.13</p><p>这一段应该是后来根据回忆补的，文字上多了一些雕琢。</p><p>故事发生在一个南方城市，也许是上海，也许是嘉兴。</p><p>旧房子，深灰色的砖墙，高高的屋角外面，几个巨大的曲别针连接着金属色的丝线，越过墙角，转向另一面。一条与众不同的金色丝线与其他丝线一同出发，却消失在转角不远的窗边，透过窗户，暖色的灯光从房间里洒出来，床边小小的桌子上，金色的丝线连接着一部老电话。</p><p>房间里的女人一头微卷的长发，穿着米色睡袍光着脚在地上踱步，她刚刚通过电话认识了一个陌生的男人，他们聊陨石，聊天空，聊他们起源的地方。她轻轻解开睡袍中间的两颗扣子，只留上下两颗松松垮垮地晃着，堪堪不让衣服散开，幻想着那个男人能出现在她身旁。</p><p>他送给她一本厚厚的书，棕灰色的封面已经磨出了绒毛，谁也不知道里面写的是什么，你不知道，我也不知道。</p><p>夜晚，一颗小小的天外来客穿过她的房顶，落在她的身边，将她惊醒，她轻轻地触碰那颗滚烫的石头，想起了他。</p><p>又是一个夜晚，她被指节在木门上轻叩的声音从梦中唤醒，门外站了一个背着一把宽刀的男人，她说我仿佛认识你，他说能准确的预测到陨石落下，在三天内从北方赶来的人，还能有谁呢，我就是他。</p><p>一转眼，他和她到了北方的草原，他说我的祖辈只用一把宽刀来观测星星，当然我还是觉得这会造成伤害，他用玩笑的语气说出——伤害大地，他把明亮如镜的宽刀竖直插入草地，刀刃指向北极星的方向，教她通过刀背往刀刃去看，她看到了清澈的夜空被一分两半，漫天繁星点缀在那把旧刀上，些许流星划过，一如梦境</p>]]></content>
     
     
     <categories>
@@ -812,11 +843,11 @@
   
   
   <entry>
-    <title>过去的梦</title>
-    <link href="/2024/03/29/20240330-general-oldnote2/"/>
-    <url>/2024/03/29/20240330-general-oldnote2/</url>
+    <title>关于睡眠障碍的旧笔记</title>
+    <link href="/2024/03/29/20240330-general-oldnote1/"/>
+    <url>/2024/03/29/20240330-general-oldnote1/</url>
     
-    <content type="html"><![CDATA[<p>聊完不好的来聊点好的，同样摘自旧便签内容。</p><hr><ol><li></li></ol><p>2021.05.29</p><p>梦到了特别特别大的月亮，我在家里吃饭，出来看到月亮从云层里钻出来又藏进去，呆呆的站在院子中间看，老爸不停的喊我回来吃饭，我还在看月亮，无比的清晰，每一片月海都清晰可见。拿出手机拍照要留着给你看，相机里的月亮变得更大更清晰了，就像在网上看到过的所有超级月亮一样，高挂半空，挂在建筑或者一棵树的半边，仿佛伸手就能够到。</p><hr><ol start="2"><li></li></ol><p>2021.08.29</p><p>后来才知道这个梦的设定和临高启明不谋而合了</p><p>和一位朋友(不知道是谁)穿越回了唐代的长安，准备在某条街上开家面馆作为起步，去另一家店吃了一碗面片汤之后，对门的来砸场子了，这时候我后面突然举起来一面旗：45000人</p><p>嗯，我也是这么才知道我还有四万五千人的，他们都是一起过来的，不仅是士兵的身份，各自也都有自己的专长。我们先从面馆起步，慢慢地聚集起来然后发展，找了一片很大的荒地开始搭建各种基础设施，大家贡献自己的力量来发展工业，在海边养了一条鲸鱼用来做天气预报，时间慢慢地来到明朝(我们怎么还没死)，工业已经很发达了，我想到我们要应对接下来西方国家的传道士带来的文化入侵和接下来的战争，于是开始发展科技，发射了一架表面上全是各种裸露的金属管的火箭，这个时候我被不知道是皇帝还是哪个敌对势力的人抓走了，逃离的过程中突然意识到我好像在做梦？于是开始蹬着墙滑墙跑路，顺便给自己开了个无敌…</p><p>逃出去之后我来到海边，去看那只给我们提供天气预报的鲸鱼，它头顶上长了一个类似于鮟鱇鱼那样的灯笼，用来观测天气然后走上案报告给观察人员…而我不知道它会上岸，被吓到了。</p><p>再接下来好像我们就进入了原子时代，到处都是充斥着苏式粗糙感的科技成果，后来就记不清了。</p><hr><ol start="3"><li></li></ol><p>2021.11.13</p><p>这一段应该是后来根据回忆补的，文字上多了一些雕琢。</p><p>故事发生在一个南方城市，也许是上海，也许是嘉兴。</p><p>旧房子，深灰色的砖墙，高高的屋角外面，几个巨大的曲别针连接着金属色的丝线，越过墙角，转向另一面。一条与众不同的金色丝线与其他丝线一同出发，却消失在转角不远的窗边，透过窗户，暖色的灯光从房间里洒出来，床边小小的桌子上，金色的丝线连接着一部老电话。</p><p>房间里的女人一头微卷的长发，穿着米色睡袍光着脚在地上踱步，她刚刚通过电话认识了一个陌生的男人，他们聊陨石，聊天空，聊他们起源的地方。她轻轻解开睡袍中间的两颗扣子，只留上下两颗松松垮垮地晃着，堪堪不让衣服散开，幻想着那个男人能出现在她身旁。</p><p>他送给她一本厚厚的书，棕灰色的封面已经磨出了绒毛，谁也不知道里面写的是什么，你不知道，我也不知道。</p><p>夜晚，一颗小小的天外来客穿过她的房顶，落在她的身边，将她惊醒，她轻轻地触碰那颗滚烫的石头，想起了他。</p><p>又是一个夜晚，她被指节在木门上轻叩的声音从梦中唤醒，门外站了一个背着一把宽刀的男人，她说我仿佛认识你，他说能准确的预测到陨石落下，在三天内从北方赶来的人，还能有谁呢，我就是他。</p><p>一转眼，他和她到了北方的草原，他说我的祖辈只用一把宽刀来观测星星，当然我还是觉得这会造成伤害，他用玩笑的语气说出——伤害大地，他把明亮如镜的宽刀竖直插入草地，刀刃指向北极星的方向，教她通过刀背往刀刃去看，她看到了清澈的夜空被一分两半，漫天繁星点缀在那把旧刀上，些许流星划过，一如梦境</p>]]></content>
+    <content type="html"><![CDATA[<p>在便签中找到了几段关于过去经历的睡眠障碍的笔记。<br>如果你也有睡眠障碍的经历，不建议看后续内容，因为这可能会导致再次遭遇睡眠障碍。</p><hr><p>醒来，以为自己醒了，仔细觉察了一下是在梦里，能感觉到自己躺在床上，能感觉到身体各个部位，但是除了呼吸之外几乎都无法控制，努力试图脱离这层梦境，想要动手指或者睁开眼，极其沉重，只能移动一点点，嘴和眼皮都不能打开，尝试移动某个部位之后就被彻底禁锢了，通常这样之后呼吸也开始困难，能感觉到咽喉也无法打开，所以这种清醒的梦境里最怕的就是自己失去对呼吸的控制，总感觉万一失败了就憋死了，每次都是用力争夺回身体控制权，很累。<br>刚刚这次，努力挣扎了很久才真正清醒过来想要记录下来，没想到突然又睡着了又进入一个这样的梦中，这次趁着刚刚开始做梦努力翻了一下身体，又醒过来了。</p><p>2020年5月</p><hr><p>趴桌子上睡觉 大概睡了十分钟 醒来</p><p>继续睡 此次大约十五分钟</p><p>梦到自己在睡觉 感觉睡得太久了 想要醒来但是做不到 有人走了过来 我在努力试图动手指 抠住了键盘空格键 想要用力起身 起不来 不知道怎么突然就醒来了能动了 很累 喝了一口水</p><p>趴下继续睡 重复上次梦境 手机响了 想起来接电话 起不来 听到有人在喊是谁的电话在响 继续挣扎想要起来 突然想到是不是要放松才能醒来 于是深呼吸告诉自己要醒来 没有用 仍然是不知道怎样突然又醒来了 赶在对方挂断电话之前接了电话</p><p>再次醒来 发现现在才是现实</p><p>拿杯子喝了一口水 很虚幻的感觉 在梦里这杯水已经被喝完了 凉白开滑过喉咙的感觉无比真实</p><p>2020年8月27日</p>]]></content>
     
     
     <categories>
@@ -1297,33 +1328,6 @@
   
   
   <entry>
-    <title>Oracle FS1-2 外部驱动器</title>
-    <link href="/2024/01/06/20240107-oracle-fsdisk-2/"/>
-    <url>/2024/01/06/20240107-oracle-fsdisk-2/</url>
-    
-    <content type="html"><![CDATA[<p>“外部”驱动器将出现系统警报，并且驱动器状态在 GUI 和 fscli 输出中都显示为“外部”。</p><p>通常，当更换故障驱动器或将驱动器机箱添加到 FS1-2 系统时，会发生这种情况。 在驱动器箱或驱动器组中执行恢复操作时也可能遇到此问题。</p><p>FS1-2 软件要求手动接受任何它事先不了解的驱动器。</p><p>注意：接受“外部”驱动器将使此驱动器上的任何现有数据无法访问。</p><p>在 FS1 系统中更换故障驱动器后，新驱动器可能会显示“外部”状态，如下图所示：<br><img src="/img/fsforeigndisk.jpg" alt="Foreign disk"></p><p>这个新的“外部”驱动器还不是驱动器组的成员，必须先接受它，然后才能在配置中使用：</p><ul><li>Using the GUI: 使用 GUI：<ol><li>Open FS System Manager, go to System –&gt; Alerts and Events –&gt; System Alerts<br> 打开 FS 系统管理器，转到系统 –&gt; 警报和事件 –&gt; 系统警报</li><li>Right click on the Foreign Disk Drive alert in the right pane and select Manage.<br> 右键单击右窗格中的“外部磁盘驱动器”警报，然后选择“管理”。</li><li>Check the box “Accept Foreign Drive” and click OK.<br> 选中“接受外部驱动器”框，然后单击确定。</li></ol></li></ul><p>使用 FSCLI：</p><ol><li>通过 FS1-2 浏览器用户界面下载最新版本的 fscli。请参阅文档 1991938.1 FS 系统：如何获取和安装 fscli 工具软件。</li><li>使用 fscli 以管理员身份登录：</li></ol><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs livescript">使用 fscli 以管理员身份登录：  <br><br>C:<span class="hljs-string">\&gt;fscli</span> login -u administrator -oracleFs &lt;_FQN <span class="hljs-keyword">or</span> IP <span class="hljs-keyword">of</span> FS1-<span class="hljs-number">2_</span>&gt;  <br>C：<span class="hljs-string">\&gt;fscli</span> login -u administrator -oracleFs<br></code></pre></td></tr></table></figure><p>接受外部驱动器（此示例使用驱动器框 05、驱动器 15）：  </p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">C</span>:\&gt; fscli enclosure -modify -enclosure /ENCLOSURE-<span class="hljs-number">05</span> -acceptDrive <span class="hljs-number">15</span>  <br></code></pre></td></tr></table></figure><p>如果外部驱动器是由驱动器更换引起的，则在接受驱动器后将开始复制，并在完成后将其变为“正常”。  </p><p>如果外部驱动器是由添加机箱引起的，您还将看到驱动器组不在存储域中的警报。将它们添加到存储域将解决此问题。</p>]]></content>
-    
-    
-    <categories>
-      
-      <category>技术</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>存储</tag>
-      
-      <tag>Oracle</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>Oracle FS1-2 降级的连接</title>
     <link href="/2024/01/06/20240107-oracle-fsdisk-1/"/>
     <url>/2024/01/06/20240107-oracle-fsdisk-1/</url>
@@ -1351,11 +1355,11 @@
   
   
   <entry>
-    <title>使用badusb绕过粘贴限制</title>
-    <link href="/2024/01/05/20240106-general-badusb/"/>
-    <url>/2024/01/05/20240106-general-badusb/</url>
+    <title>Oracle FS1-2 外部驱动器</title>
+    <link href="/2024/01/06/20240107-oracle-fsdisk-2/"/>
+    <url>/2024/01/06/20240107-oracle-fsdisk-2/</url>
     
-    <content type="html"><![CDATA[<p>obsidian都已经打开了，顺便把前两天的一个小操作写出来。</p><p>事情起因是遇到了一个不允许右键及复制粘贴操作的文本框，如果是Web的话一般这种时候就几个操作：停js&#x2F;改css&#x2F;装插件，但如果对方是个应用，又没调试环境，就麻爪了。我遇到的就是这个情况，还好没有啥复制需求，仅需要解决大段英文文本不想手打偷懒粘贴的问题。</p><p>果然偷懒是人类进步的原动力啊！</p><p>想了想，要么软件模拟输入法输入，要么模拟键盘输入。前者的话要上网去找软件，懒，想起来抽屉里有badusb，那干脆就用badusb实现后者好了。</p><p>打开Arduino，好久没碰过了打开之后还是以前捣鼓ESP32摄像头监控家里的项目，保存关掉，开发板切成Arduino Leonardo，硬盘里找到badusb的脚本库，把唤起记事本打印Hello World的改一下。</p><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;Keyboard.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">begin</span>();<br>  <span class="hljs-built_in">delay</span>(<span class="hljs-number">3000</span>); <span class="hljs-comment">// 延时</span><br><br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">end</span>(); <span class="hljs-comment">// 结束键盘通讯</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-comment">// 无操作</span><br>&#125;<br></code></pre></td></tr></table></figure><p>验证，烧写，光标挪到待输入的文本框，懒得复制的大段文本哗啦哗啦的就输进去了，齐活。</p><p>可惜没办法写中文，所以也只是个应用面极窄的奇技淫巧而已。</p>]]></content>
+    <content type="html"><![CDATA[<p>“外部”驱动器将出现系统警报，并且驱动器状态在 GUI 和 fscli 输出中都显示为“外部”。</p><p>通常，当更换故障驱动器或将驱动器机箱添加到 FS1-2 系统时，会发生这种情况。 在驱动器箱或驱动器组中执行恢复操作时也可能遇到此问题。</p><p>FS1-2 软件要求手动接受任何它事先不了解的驱动器。</p><p>注意：接受“外部”驱动器将使此驱动器上的任何现有数据无法访问。</p><p>在 FS1 系统中更换故障驱动器后，新驱动器可能会显示“外部”状态，如下图所示：<br><img src="/img/fsforeigndisk.jpg" alt="Foreign disk"></p><p>这个新的“外部”驱动器还不是驱动器组的成员，必须先接受它，然后才能在配置中使用：</p><ul><li>Using the GUI: 使用 GUI：<ol><li>Open FS System Manager, go to System –&gt; Alerts and Events –&gt; System Alerts<br> 打开 FS 系统管理器，转到系统 –&gt; 警报和事件 –&gt; 系统警报</li><li>Right click on the Foreign Disk Drive alert in the right pane and select Manage.<br> 右键单击右窗格中的“外部磁盘驱动器”警报，然后选择“管理”。</li><li>Check the box “Accept Foreign Drive” and click OK.<br> 选中“接受外部驱动器”框，然后单击确定。</li></ol></li></ul><p>使用 FSCLI：</p><ol><li>通过 FS1-2 浏览器用户界面下载最新版本的 fscli。请参阅文档 1991938.1 FS 系统：如何获取和安装 fscli 工具软件。</li><li>使用 fscli 以管理员身份登录：</li></ol><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs livescript">使用 fscli 以管理员身份登录：  <br><br>C:<span class="hljs-string">\&gt;fscli</span> login -u administrator -oracleFs &lt;_FQN <span class="hljs-keyword">or</span> IP <span class="hljs-keyword">of</span> FS1-<span class="hljs-number">2_</span>&gt;  <br>C：<span class="hljs-string">\&gt;fscli</span> login -u administrator -oracleFs<br></code></pre></td></tr></table></figure><p>接受外部驱动器（此示例使用驱动器框 05、驱动器 15）：  </p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">C</span>:\&gt; fscli enclosure -modify -enclosure /ENCLOSURE-<span class="hljs-number">05</span> -acceptDrive <span class="hljs-number">15</span>  <br></code></pre></td></tr></table></figure><p>如果外部驱动器是由驱动器更换引起的，则在接受驱动器后将开始复制，并在完成后将其变为“正常”。  </p><p>如果外部驱动器是由添加机箱引起的，您还将看到驱动器组不在存储域中的警报。将它们添加到存储域将解决此问题。</p>]]></content>
     
     
     <categories>
@@ -1367,9 +1371,34 @@
     
     <tags>
       
-      <tag>其他</tag>
+      <tag>存储</tag>
       
-      <tag>Badusb</tag>
+      <tag>Oracle</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>牙疼的一周</title>
+    <link href="/2024/01/05/20240106-general-pain/"/>
+    <url>/2024/01/05/20240106-general-pain/</url>
+    
+    <content type="html"><![CDATA[<p>24年开年这一周基本没干啥，平时就是陪女朋友，做做饭。结果从昨天，垂死病中惊坐起，也不知道抽了啥风睡着觉用力咬了一下后槽牙，原先那颗被智齿顶坏补过的磨牙又开始疼了。</p><p>从补牙材料掉了之后，这颗歪歪扭扭的牙就开始疼，一周前它刚安生下来算是让我过了个好元旦，结果没高兴几天，从昨天开始疼痛更深，疼到没办法集中注意力做事，去看了一下看情况说是要拔了，约了周一上午去拔牙，当晚又吃顿火锅，吃生菜的时候还把坏牙咬了一下，人都麻了。</p><p>辗转反侧一夜难眠，到了今早上还是疼，买药，甲硝唑对乙酰氨基酚头孢克洛，一样两颗放在手里仿佛自己是个药罐子，这时候也不想啥肝肾毒性了，能不牙疼就行，一到这时候就开始敬佩革命先辈，要我疼成那样早啥都招了。刚买完药一个客户工程师又发消息找我，帮忙看一台Oracle存储的问题，勉强集中精神看了看发来的截图，盘柜里能认到盘，Raid组里本应12块盘现在只有11块在还有一块显示缺失，同时另外一个组里有一块状态为已恢复，task里没有在跑，寻摸了一下估计是缓存问题了，要找命令手动把盘踢出去重新加，这会儿牙疼得我实在力有未逮，跟人讲了一下等状态好点帮忙找找看。</p><p>饿了，喝粥。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>杂谈</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>其他</tag>
       
     </tags>
     
@@ -1403,16 +1432,16 @@
   
   
   <entry>
-    <title>牙疼的一周</title>
-    <link href="/2024/01/05/20240106-general-pain/"/>
-    <url>/2024/01/05/20240106-general-pain/</url>
+    <title>使用badusb绕过粘贴限制</title>
+    <link href="/2024/01/05/20240106-general-badusb/"/>
+    <url>/2024/01/05/20240106-general-badusb/</url>
     
-    <content type="html"><![CDATA[<p>24年开年这一周基本没干啥，平时就是陪女朋友，做做饭。结果从昨天，垂死病中惊坐起，也不知道抽了啥风睡着觉用力咬了一下后槽牙，原先那颗被智齿顶坏补过的磨牙又开始疼了。</p><p>从补牙材料掉了之后，这颗歪歪扭扭的牙就开始疼，一周前它刚安生下来算是让我过了个好元旦，结果没高兴几天，从昨天开始疼痛更深，疼到没办法集中注意力做事，去看了一下看情况说是要拔了，约了周一上午去拔牙，当晚又吃顿火锅，吃生菜的时候还把坏牙咬了一下，人都麻了。</p><p>辗转反侧一夜难眠，到了今早上还是疼，买药，甲硝唑对乙酰氨基酚头孢克洛，一样两颗放在手里仿佛自己是个药罐子，这时候也不想啥肝肾毒性了，能不牙疼就行，一到这时候就开始敬佩革命先辈，要我疼成那样早啥都招了。刚买完药一个客户工程师又发消息找我，帮忙看一台Oracle存储的问题，勉强集中精神看了看发来的截图，盘柜里能认到盘，Raid组里本应12块盘现在只有11块在还有一块显示缺失，同时另外一个组里有一块状态为已恢复，task里没有在跑，寻摸了一下估计是缓存问题了，要找命令手动把盘踢出去重新加，这会儿牙疼得我实在力有未逮，跟人讲了一下等状态好点帮忙找找看。</p><p>饿了，喝粥。</p>]]></content>
+    <content type="html"><![CDATA[<p>obsidian都已经打开了，顺便把前两天的一个小操作写出来。</p><p>事情起因是遇到了一个不允许右键及复制粘贴操作的文本框，如果是Web的话一般这种时候就几个操作：停js&#x2F;改css&#x2F;装插件，但如果对方是个应用，又没调试环境，就麻爪了。我遇到的就是这个情况，还好没有啥复制需求，仅需要解决大段英文文本不想手打偷懒粘贴的问题。</p><p>果然偷懒是人类进步的原动力啊！</p><p>想了想，要么软件模拟输入法输入，要么模拟键盘输入。前者的话要上网去找软件，懒，想起来抽屉里有badusb，那干脆就用badusb实现后者好了。</p><p>打开Arduino，好久没碰过了打开之后还是以前捣鼓ESP32摄像头监控家里的项目，保存关掉，开发板切成Arduino Leonardo，硬盘里找到badusb的脚本库，把唤起记事本打印Hello World的改一下。</p><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;Keyboard.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">begin</span>();<br>  <span class="hljs-built_in">delay</span>(<span class="hljs-number">3000</span>); <span class="hljs-comment">// 延时</span><br><br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">end</span>(); <span class="hljs-comment">// 结束键盘通讯</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-comment">// 无操作</span><br>&#125;<br></code></pre></td></tr></table></figure><p>验证，烧写，光标挪到待输入的文本框，懒得复制的大段文本哗啦哗啦的就输进去了，齐活。</p><p>可惜没办法写中文，所以也只是个应用面极窄的奇技淫巧而已。</p>]]></content>
     
     
     <categories>
       
-      <category>杂谈</category>
+      <category>技术</category>
       
     </categories>
     
@@ -1420,6 +1449,8 @@
     <tags>
       
       <tag>其他</tag>
+      
+      <tag>Badusb</tag>
       
     </tags>
     
