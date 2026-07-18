@@ -1415,25 +1415,23 @@
   
   
   <entry>
-    <title>使用badusb绕过粘贴限制</title>
-    <link href="/2024/01/05/20240106-general-badusb/"/>
-    <url>/2024/01/05/20240106-general-badusb/</url>
+    <title>颠覆性的UEVR</title>
+    <link href="/2024/01/05/20240106-general-uevr/"/>
+    <url>/2024/01/05/20240106-general-uevr/</url>
     
-    <content type="html"><![CDATA[<p>obsidian都已经打开了，顺便把前两天的一个小操作写出来。</p><p>事情起因是遇到了一个不允许右键及复制粘贴操作的文本框，如果是Web的话一般这种时候就几个操作：停js&#x2F;改css&#x2F;装插件，但如果对方是个应用，又没调试环境，就麻爪了。我遇到的就是这个情况，还好没有啥复制需求，仅需要解决大段英文文本不想手打偷懒粘贴的问题。</p><p>果然偷懒是人类进步的原动力啊！</p><p>想了想，要么软件模拟输入法输入，要么模拟键盘输入。前者的话要上网去找软件，懒，想起来抽屉里有badusb，那干脆就用badusb实现后者好了。</p><p>打开Arduino，好久没碰过了打开之后还是以前捣鼓ESP32摄像头监控家里的项目，保存关掉，开发板切成Arduino Leonardo，硬盘里找到badusb的脚本库，把唤起记事本打印Hello World的改一下。</p><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;Keyboard.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">begin</span>();<br>  <span class="hljs-built_in">delay</span>(<span class="hljs-number">3000</span>); <span class="hljs-comment">// 延时</span><br><br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">end</span>(); <span class="hljs-comment">// 结束键盘通讯</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-comment">// 无操作</span><br>&#125;<br></code></pre></td></tr></table></figure><p>验证，烧写，光标挪到待输入的文本框，懒得复制的大段文本哗啦哗啦的就输进去了，齐活。</p><p>可惜没办法写中文，所以也只是个应用面极窄的奇技淫巧而已。</p>]]></content>
+    <content type="html"><![CDATA[<p>praydog大佬的<a href="https://github.com/praydog/UEVR">UEVR</a>项目正式发布，大约是颠覆了整个VR游戏界了，数万款使用UE开发的游戏都能转为VR游玩，昨天简单试了一下RON，刚戴上头显折腾好就被牙疼搞得放弃了，先立字据，好了再细研究。</p><hr><p>0123更新</p><p>Steam上有超过1.1万款UE引擎的游戏，而现在，可以使用UEVR工具，将玩家的视角真正沉浸地放到游戏世界里，URVR工具开箱即用，不需要做任何多余配置，整个流程就是：<br>启动游戏–&gt;启动UEVR–&gt;在进程列表中选择游戏并inject–&gt;带上头显，在弹出的菜单中设置站立位置和高度。<br>没了</p><p>关于可玩的游戏，有人整理了一个表格：<a href="https://docs.google.com/spreadsheets/d/1ZcjCQwzPOltaRZnpYU5_HPihEDareZq_0Ww1DZQ4USw/edit#gid=0">UEVR - Universal Unreal Engine VR Injector from praydog</a>。</p>]]></content>
     
     
     <categories>
       
-      <category>技术</category>
+      <category>游戏</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>其他</tag>
-      
-      <tag>Badusb</tag>
+      <tag>Game</tag>
       
     </tags>
     
@@ -1467,23 +1465,25 @@
   
   
   <entry>
-    <title>颠覆性的UEVR</title>
-    <link href="/2024/01/05/20240106-general-uevr/"/>
-    <url>/2024/01/05/20240106-general-uevr/</url>
+    <title>使用badusb绕过粘贴限制</title>
+    <link href="/2024/01/05/20240106-general-badusb/"/>
+    <url>/2024/01/05/20240106-general-badusb/</url>
     
-    <content type="html"><![CDATA[<p>praydog大佬的<a href="https://github.com/praydog/UEVR">UEVR</a>项目正式发布，大约是颠覆了整个VR游戏界了，数万款使用UE开发的游戏都能转为VR游玩，昨天简单试了一下RON，刚戴上头显折腾好就被牙疼搞得放弃了，先立字据，好了再细研究。</p><hr><p>0123更新</p><p>Steam上有超过1.1万款UE引擎的游戏，而现在，可以使用UEVR工具，将玩家的视角真正沉浸地放到游戏世界里，URVR工具开箱即用，不需要做任何多余配置，整个流程就是：<br>启动游戏–&gt;启动UEVR–&gt;在进程列表中选择游戏并inject–&gt;带上头显，在弹出的菜单中设置站立位置和高度。<br>没了</p><p>关于可玩的游戏，有人整理了一个表格：<a href="https://docs.google.com/spreadsheets/d/1ZcjCQwzPOltaRZnpYU5_HPihEDareZq_0Ww1DZQ4USw/edit#gid=0">UEVR - Universal Unreal Engine VR Injector from praydog</a>。</p>]]></content>
+    <content type="html"><![CDATA[<p>obsidian都已经打开了，顺便把前两天的一个小操作写出来。</p><p>事情起因是遇到了一个不允许右键及复制粘贴操作的文本框，如果是Web的话一般这种时候就几个操作：停js&#x2F;改css&#x2F;装插件，但如果对方是个应用，又没调试环境，就麻爪了。我遇到的就是这个情况，还好没有啥复制需求，仅需要解决大段英文文本不想手打偷懒粘贴的问题。</p><p>果然偷懒是人类进步的原动力啊！</p><p>想了想，要么软件模拟输入法输入，要么模拟键盘输入。前者的话要上网去找软件，懒，想起来抽屉里有badusb，那干脆就用badusb实现后者好了。</p><p>打开Arduino，好久没碰过了打开之后还是以前捣鼓ESP32摄像头监控家里的项目，保存关掉，开发板切成Arduino Leonardo，硬盘里找到badusb的脚本库，把唤起记事本打印Hello World的改一下。</p><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;Keyboard.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">begin</span>();<br>  <span class="hljs-built_in">delay</span>(<span class="hljs-number">3000</span>); <span class="hljs-comment">// 延时</span><br><br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">println</span>(<span class="hljs-string">&quot;text&quot;</span>);<br>  <span class="hljs-built_in">Keyboard</span>.<span class="hljs-built_in">end</span>(); <span class="hljs-comment">// 结束键盘通讯</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-comment">// 无操作</span><br>&#125;<br></code></pre></td></tr></table></figure><p>验证，烧写，光标挪到待输入的文本框，懒得复制的大段文本哗啦哗啦的就输进去了，齐活。</p><p>可惜没办法写中文，所以也只是个应用面极窄的奇技淫巧而已。</p>]]></content>
     
     
     <categories>
       
-      <category>游戏</category>
+      <category>技术</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>Game</tag>
+      <tag>其他</tag>
+      
+      <tag>Badusb</tag>
       
     </tags>
     
