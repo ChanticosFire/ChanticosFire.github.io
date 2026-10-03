@@ -1,0 +1,1101 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/site-avatar.png">
+  <link rel="icon" href="/img/site-avatar.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Caleb">
+  <meta name="keywords" content="Android 车机, 车机固件, adbd 调试后门, 逆向工程, Root, AVB, dm-verity">
+  
+    <meta name="description" content="在一套量产 Android 车机固件中发现厂商遗留的 adbd 调试提权入口，并由此分析它的认证缺陷、安全影响，以及 Bootloader、SELinux、AVB 与持久化 Root 之间的关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="量产车机里的调试后门：从固件逆向到 Root 持久化">
+<meta property="og:url" content="http://example.com/2026/10/03/20261003-head-unit-firmware-root-persistence/index.html">
+<meta property="og:site_name" content="Caleb&#39;s Blog">
+<meta property="og:description" content="在一套量产 Android 车机固件中发现厂商遗留的 adbd 调试提权入口，并由此分析它的认证缺陷、安全影响，以及 Bootloader、SELinux、AVB 与持久化 Root 之间的关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/cover-head-unit-backdoor.webp">
+<meta property="article:published_time" content="2026-10-03T06:46:00.000Z">
+<meta property="article:modified_time" content="2026-10-03T15:04:18.275Z">
+<meta property="article:author" content="Caleb">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Root">
+<meta property="article:tag" content="安全">
+<meta property="article:tag" content="调试后门">
+<meta property="article:tag" content="车机">
+<meta property="article:tag" content="逆向工程">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/cover-head-unit-backdoor.webp">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>量产车机里的调试后门：从固件逆向到 Root 持久化 - Caleb&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Caleb&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://texboot.15926.tech/" target="_blank">
+                <i class="iconfont icon-link-fill"></i>
+                <span>channel</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://www.travellings.cn/go.html" target="_blank">
+                
+                <span>🚇 开往</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/palebluedot.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="量产车机里的调试后门：从固件逆向到 Root 持久化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-10-03 14:46" pubdate>
+          2026年10月3日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          84 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">量产车机里的调试后门：从固件逆向到 Root 持久化</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>这次分析最重要的发现，是量产 Android 车机的 <code>adbd</code> 中保留了一套厂商调试提权入口。它使用设备标识和固件内的固定盐派生凭据；验证通过后，<code>adbd</code> 可以直接以 root 身份重启。</p>
+<p>这不是一段无法到达的工程残留。我从固件中还原出校验逻辑后，在自有设备上完成了临时 root 验证。继续检查，又发现 Bootloader 解锁、系统保留调试属性、SELinux 为 Permissive，Verified Boot 也处于非绿色状态。几个原本应该彼此补位的安全层，在这套量产系统里同时留出了缺口。</p>
+<p>研究的起点其实只是车内一个普通功能。为了确认 Android 车机到下层控制器之间的通信路径，我开发测试 App、收集日志、反编译原车程序，并最终解包了厂商升级固件。功能协议尚未完全还原，调试后门却先浮了出来，后续工作也随之转向启动链、权限边界和持久化风险。</p>
+<p>本文重点记录这套厂商遗留调试入口为何能够成立、它会影响哪些系统边界，以及从临时 root 延伸到持久化时必须面对的 AVB、A&#x2F;B 和恢复问题。所有结论均区分静态证据、实车验证和仍未验证的推测。</p>
+<hr>
+<h2 id="一、脱敏与边界说明"><a href="#一、脱敏与边界说明" class="headerlink" title="一、脱敏与边界说明"></a>一、脱敏与边界说明</h2><p>本文涉及量产车辆和厂商遗留调试机制。为避免将一次针对自有设备的研究写成可直接复制的利用链，以下信息均已脱敏：</p>
+<ul>
+<li>车辆品牌、具体车型和年款</li>
+<li>车机供应商及内部平台名称</li>
+<li>固件完整版本号</li>
+<li>设备序列号、车机 IP 和 ADB 地址</li>
+<li>原车应用包名、服务名和工程入口</li>
+<li>调试属性的准确名称</li>
+<li>固定盐、派生结果及实车口令</li>
+<li>灯控记录号、VHAL 属性号和二进制偏移</li>
+</ul>
+<p>算法只保留到足以说明问题的层面：厂商使用“设备标识 + 固定盐”的 MD5 结果作为调试凭据。盐值和实车派生值不公开。</p>
+<p>另外，本文记录的是我自己的车辆和离线固件副本。持久化候选镜像目前只完成离线制作与审计，<strong>没有刷入实车，也不能视为已经验证可用的教程</strong>。</p>
+<hr>
+<h2 id="二、起点：向氛围灯控制器发送自定义指令"><a href="#二、起点：向氛围灯控制器发送自定义指令" class="headerlink" title="二、起点：向氛围灯控制器发送自定义指令"></a>二、起点：向氛围灯控制器发送自定义指令</h2><p>目标车辆搭载一套 Android 车机。原车氛围灯支持开关、亮度和少量固定颜色，但没有开放任意 RGB 调节。</p>
+<p>最初做了一个普通 Android App 原型，界面包括：</p>
+<ul>
+<li>HSV 色盘与 RGB 数值</li>
+<li>亮度和开关</li>
+<li>颜色预设</li>
+<li>静态、动态和音乐模式</li>
+<li>USB CDC 通信框架</li>
+<li>独立调试页面</li>
+</ul>
+<p>为了避免一开始就误碰车辆总线，初版只使用 Mock Transport，不包含原始 CAN ID、任意 payload 或总线注入功能。</p>
+<p>之后又开发了只读诊断 App 和电脑端 ADB 采集脚本，用来收集：</p>
+<ul>
+<li>系统构建、内核和 SELinux 状态</li>
+<li>安装包、权限与系统服务</li>
+<li>Binder &#x2F; HIDL &#x2F; VHAL 线索</li>
+<li>USB、串口、网络接口和设备节点</li>
+<li>全局 logcat 与事件时间戳</li>
+</ul>
+<p>然后通过实体按键、原车设置页面和测试 App 的操作做差分，希望定位颜色与亮度的控制路径。</p>
+<hr>
+<h2 id="三、原车软件确实藏着多色灯控代码"><a href="#三、原车软件确实藏着多色灯控代码" class="headerlink" title="三、原车软件确实藏着多色灯控代码"></a>三、原车软件确实藏着多色灯控代码</h2><p>反编译原车车辆设置程序后，发现它并不是只为当前车型编写的单一版本，而是一套覆盖多个车型和硬件配置的通用程序。</p>
+<p>其中已经包含：</p>
+<ul>
+<li>多档颜色选择器</li>
+<li>亮度控制</li>
+<li>静态模式</li>
+<li>动态模式</li>
+<li>音乐律动模式</li>
+<li>对应的 Vehicle HAL 属性读写代码</li>
+</ul>
+<p>但当前车型的配置只开放基础氛围灯界面，多色和律动功能被车型开关隐藏。</p>
+<p>这说明车机软件平台本身具备更完整的灯控协议，但并不能直接证明车上的三色灯控 ECU 支持全部功能。界面被隐藏，可能是产品定位，也可能是硬件能力不同。</p>
+<p>实车测试很快验证了这种差异：</p>
+<ul>
+<li>普通未签名 App 可以通过原车代理接口控制亮度</li>
+<li>亮度改变后，实灯和原车设置条都会同步更新</li>
+<li>颜色和模式写入可以返回“成功”</li>
+<li>但灯光没有变化，真实回复值也没有接受新的颜色</li>
+</ul>
+<p>也就是说：</p>
+<p><code>HAL 接受了一次调用，不等于灯控 ECU 执行了这次调用。</code></p>
+<p>部分回复只是 Android 本地立即合成的状态，而不是车辆侧确认。</p>
+<hr>
+<h2 id="四、为什么开始解包厂商升级固件"><a href="#四、为什么开始解包厂商升级固件" class="headerlink" title="四、为什么开始解包厂商升级固件"></a>四、为什么开始解包厂商升级固件</h2><p>在 App 和在线日志中继续盲试，价值已经很低。</p>
+<p>普通第三方 App 还会受到平台签名权限限制，无法直接使用完整的厂商车辆扩展接口。即使当前 SELinux 是 Permissive，Android Framework 仍会按调用者 UID 检查签名权限；Permissive 只会放宽 SELinux 的强制执行，并不会自动绕过 Java&#x2F;Binder 权限模型。</p>
+<p>于是研究转向厂商升级包，希望从离线固件中确认：</p>
+<ol>
+<li>VHAL 到下层通信的映射关系</li>
+<li>是否存在可复用的系统代理接口</li>
+<li>灯控记录如何封装</li>
+<li>是否错误打包了平台密钥或工程凭据</li>
+<li>Boot、System、Vendor 和校验链的结构</li>
+</ol>
+<p>升级包恢复出了多个分区镜像，包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs text">boot<br>system<br>vendor<br>vbmeta<br>bootloader<br>IOC / MCU 相关固件<br></code></pre></td></tr></table></figure>
+
+<p>没有找到 Android 平台签名私钥。固件里虽然存在若干 PEM、证书和升级密钥材料，但与平台证书不匹配，主要服务于 ECU 升级或诊断链路，无法拿来给普通 APK 添加系统签名。</p>
+<p>这一点符合预期：量产 OTA 通常只包含签名结果、公钥证书和校验信息，不应包含 OEM 平台私钥。</p>
+<hr>
+<h2 id="五、还原-VHAL-到-IOC-的灯控链路"><a href="#五、还原-VHAL-到-IOC-的灯控链路" class="headerlink" title="五、还原 VHAL 到 IOC 的灯控链路"></a>五、还原 VHAL 到 IOC 的灯控链路</h2><p>固件逆向最终找到了几类灯控逻辑记录，分别对应：</p>
+<ul>
+<li>亮度</li>
+<li>静态模式</li>
+<li>动态模式</li>
+<li>多色索引</li>
+<li>音乐律动</li>
+</ul>
+<p>Android 侧并不是直接发送原始 CAN 帧，而是写入一段厂商 DataStream。其结构可以抽象为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">操作类型 + 逻辑记录号 + 参数值<br></code></pre></td></tr></table></figure>
+
+<p>下层路径大致为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs text">车辆设置 App<br>    ↓<br>Vehicle HAL<br>    ↓<br>厂商 IPC 设备<br>    ↓<br>ipc_server<br>    ↓<br>高速串口<br>    ↓<br>独立 IOC / 网关<br>    ↓<br>车身 CAN 或局部 LIN<br></code></pre></td></tr></table></figure>
+
+<p>其中 <code>ipc_server</code> 负责厂商帧的 CRC、ACK、序号、重传和流控。因此，从 Android 侧看到的几字节 DataStream 只是上层逻辑消息，不是带 Arbitration ID、DLC 和原始数据段的 CAN 帧。</p>
+<p>这也解释了为什么车机上没有 <code>can0</code> 或 <code>can1</code>，无法直接运行 <code>candump</code>。内核虽然带有部分 SocketCAN 协议能力，但没有启用物理 CAN 设备框架；物理总线很可能终止在独立 IOC，而不是 Android 主系统。</p>
+<p>原本的灯控研究到这里已经有了比较清楚的方向：使用原厂 IPC 库发送经过白名单限制的灯光逻辑记录，比直接盲写串口安全得多。</p>
+<p>但在搜索 IPC、诊断和工程模式代码时，出现了一个完全意外的发现。</p>
+<hr>
+<h2 id="六、量产固件里的-OEM-adbd-调试后门"><a href="#六、量产固件里的-OEM-adbd-调试后门" class="headerlink" title="六、量产固件里的 OEM adbd 调试后门"></a>六、量产固件里的 OEM adbd 调试后门</h2><p>反汇编车机中的 <code>adbd</code> 后，发现它保留了一段 OEM Root 校验代码。</p>
+<p>逻辑可以概括为：</p>
+<ol>
+<li><code>adbd</code> 读取设备唯一标识</li>
+<li>把设备标识与固件内硬编码的固定盐拼接</li>
+<li>计算 MD5</li>
+<li>将结果转为小写十六进制字符串</li>
+<li>从一个厂商私有系统属性中读取外部提交的值</li>
+<li>两者一致时，允许 <code>adbd</code> 以 root 身份重启</li>
+</ol>
+<p>算法原理为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">token = lowercase_hex(MD5(device_serial || static_salt))<br></code></pre></td></tr></table></figure>
+
+<p>这里真正的问题不在 MD5 本身，而在整个信任模型：</p>
+<ul>
+<li>设备标识可以从系统中读取</li>
+<li>盐值固定写在量产固件中</li>
+<li>算法也位于客户端固件</li>
+<li>没有服务端 <code>challenge</code>，也没有不可导出的硬件密钥参与</li>
+</ul>
+<p>这套设计中，真正随设备变化的只有可读取的设备标识。盐值和算法虽然没有出现在用户界面里，却都作为固件的一部分交付。把它们称为“秘密”，本质上依赖的只是分析者暂时没有打开固件。</p>
+<h3 id="为什么把它视为后门"><a href="#为什么把它视为后门" class="headerlink" title="为什么把它视为后门"></a>为什么把它视为后门</h3><p>它最初可能是工厂测试或售后维护入口，但进入量产固件后，判断标准不再是开发者的原始用途，而是它实际提供了什么能力：一条绕过正常授权流程、能够把 <code>adbd</code> 切换到 root 的隐藏路径。</p>
+<p>这条路径没有用户确认、没有在线授权、没有时效性，也没有真正由设备硬件保护的凭据。一旦派生逻辑被还原，它就不再是只掌握在厂商手中的维护能力，而是固件持有者可以重复计算的本地提权入口。</p>
+<h3 id="安全影响与利用边界"><a href="#安全影响与利用边界" class="headerlink" title="安全影响与利用边界"></a>安全影响与利用边界</h3><p>这不是一个已经证实可从互联网直接触发的远程漏洞。利用仍然需要接触可用的 ADB 或厂商工程通道、获得设备标识，并完成针对固件的分析。本文没有发现开放到公网的入口，也没有证明攻击者可以在完全无接触的情况下取得 root。</p>
+<p>但只要前提成立，影响就不只是“多看一些调试日志”。root <code>adbd</code> 可以跨过普通 App 沙箱和签名权限边界，读取受保护数据、控制系统服务、检查厂商 IPC，并为进一步修改运行状态或持久化文件提供条件。对车机而言，这还意味着攻击者能够接近原本只对系统组件开放的车辆服务和诊断链路。</p>
+<p>更值得警惕的是可复制性。token 虽然与设备标识绑定，但固定盐和派生算法如果在同平台固件中复用，那么攻破一份固件后，分析方法就可能迁移到同系列设备。逐设备变化的结果，并不能抵消派生机制本身已经公开这一事实。</p>
+<p>另一方面，获得车机 root 不等于已经获得任意 CAN 控制权，也不等于能够越过独立 IOC、网关和 ECU 自身的校验。本文把这条路径定义为严重的主机侧提权入口，但不会把它夸大成已经验证的整车远程接管。</p>
+<p>我没有在本文中公开准确属性名、盐值、序列号或派生结果。</p>
+<hr>
+<h2 id="七、临时-Root-的实车验证"><a href="#七、临时-Root-的实车验证" class="headerlink" title="七、临时 Root 的实车验证"></a>七、临时 Root 的实车验证</h2><p>根据反汇编结果计算设备专用 token 后，在已开启的 ADB 会话中写入对应私有属性，再请求 <code>adbd</code> 以 root 模式重启。</p>
+<p>重连后验证结果为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">uid=0(root)<br>SELinux context = su domain<br></code></pre></td></tr></table></figure>
+
+<p>这证明了三件事：</p>
+<ol>
+<li>反汇编得到的派生算法正确</li>
+<li>该逻辑不是未使用的残留字符串，而是实际可达的控制流</li>
+<li>当前固件允许通过这条路径获得 root ADB shell</li>
+</ol>
+<p>但这仍然只是临时 root：</p>
+<ul>
+<li>重启后私有属性不会自动恢复</li>
+<li><code>adbd</code> 仍按原启动流程运行</li>
+<li>普通 App 的 UID 不会因为 root ADB 存在而自动变成 root</li>
+<li>也没有通用 <code>su</code> 授权管理</li>
+</ul>
+<p>如果只为了继续分析灯控，这种 root shell 已经足够进行只读挂钩、日志采集和 IPC 调试；如果希望车机每次冷启动后都保留能力，就需要进入持久化问题。</p>
+<hr>
+<h2 id="八、其他安全配置进一步放大了后门风险"><a href="#八、其他安全配置进一步放大了后门风险" class="headerlink" title="八、其他安全配置进一步放大了后门风险"></a>八、其他安全配置进一步放大了后门风险</h2><p>获得 root 后，对系统启动和安全状态做了完整检查，结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>实际状态</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Verified Boot</td>
+<td><code>orange</code></td>
+<td>设备处于非锁定可信状态</td>
+</tr>
+<tr>
+<td>Bootloader 锁</td>
+<td><code>flash.locked = 0</code></td>
+<td>引导加载程序报告为解锁</td>
+</tr>
+<tr>
+<td>Android 构建</td>
+<td><code>ro.debuggable = 1</code></td>
+<td>保留调试能力</td>
+</tr>
+<tr>
+<td>SELinux</td>
+<td><code>Permissive</code></td>
+<td>SELinux 拒绝只记录、不强制阻止</td>
+</tr>
+<tr>
+<td><code>/vendor</code></td>
+<td>dm-verity 只读</td>
+<td>分区内容仍受哈希树保护</td>
+</tr>
+<tr>
+<td>启动槽位</td>
+<td>A&#x2F;B 结构</td>
+<td>存在槽位机制，但回退行为未实测</td>
+</tr>
+</tbody></table>
+<p>这些配置会放大调试后门被利用后的影响：<code>ro.debuggable</code> 保留了更多调试行为，SELinux Permissive 削弱了强制访问控制，Bootloader 解锁则降低了进一步研究启动链和分区修改的门槛。它们单独出现时未必能直接形成完整利用链，同时出现时却让临时 root 更容易向系统深处延伸。</p>
+<p>不过，这组状态仍不能简单解释为“随便刷都能启动”。</p>
+<p>Bootloader 解锁只说明部分验证错误可能被放行，不等于 OEM 一定接受任意未签名 <code>vbmeta</code>；SELinux Permissive 也不等于 Framework 权限、文件系统校验和启动信任链全部失效。</p>
+<p>尤其 <code>/system</code>、<code>/vendor</code> 仍在 AVB&#x2F;dm-verity 体系中。修改文件内容后，原哈希树和签名描述必然失效。</p>
+<hr>
+<h2 id="九、Root-之后能做什么，不能做什么"><a href="#九、Root-之后能做什么，不能做什么" class="headerlink" title="九、Root 之后能做什么，不能做什么"></a>九、Root 之后能做什么，不能做什么</h2><p>一旦调试入口把 <code>adbd</code> 切换到 root，操作者面对的就不再是普通第三方 App 的权限边界。Android 沙箱、平台签名权限和受保护文件权限仍然存在，但已经无法约束这个 root shell；它可以直接观察和干预许多原本只允许系统组件访问的对象。</p>
+<p>在这台车机上，root 最直接的能力不是让系统突然出现原始 CAN 接口，而是打开厂商软件栈内部原本不可见的数据和服务。</p>
+<p>已经确认可以研究的路径包括：</p>
+<ul>
+<li>挂钩原厂 IPC 库的读写函数</li>
+<li>记录 VHAL 与 IOC 之间的明文逻辑消息</li>
+<li>观察 <code>ipc_server</code> 对高速串口的收发</li>
+<li>调用厂商诊断 HIDL 的基础接口</li>
+<li>构造受控 helper，通过原厂库完成封包和重传</li>
+</ul>
+<p>但 root 无法凭空补出不存在的内核驱动：</p>
+<ul>
+<li>系统没有物理 <code>can0/can1</code></li>
+<li>没有通用 CAN&#x2F;LIN 字符设备</li>
+<li>内核强制校验模块签名</li>
+<li>自行编译的未签名 CAN 驱动不能直接加载</li>
+</ul>
+<p>此外，实车研究还暴露了一个很重要的安全边界。</p>
+<p>曾经尝试用全进程 <code>strace/ptrace</code> 观察 VHAL、IOC 和诊断服务。虽然确实抓到了大量厂商通信，但 ptrace 会短暂停顿实时线程，测试过程中一度触发车道辅助系统故障提示。停止跟踪后告警随即消失，核心服务也没有崩溃。</p>
+<p>因此后续明确放弃全进程 ptrace，不对未知记录做回放。更合理的方向是低开销的 uprobe&#x2F;eBPF，或者使用外接 CAN&#x2F;LIN 分析仪做纯被动监听。</p>
+<p>这次经历也提醒我：</p>
+<p><code>在普通 Linux 上属于“只读观察”的动作，放到实时车辆通信链路中也可能改变系统行为。</code></p>
+<hr>
+<h2 id="十、最初的持久化思路为什么是错的"><a href="#十、最初的持久化思路为什么是错的" class="headerlink" title="十、最初的持久化思路为什么是错的"></a>十、最初的持久化思路为什么是错的</h2><p>获得临时 root 后，第一个直觉是修改 <code>boot.img</code> 的 ramdisk，在 early-init 阶段写入调试 token 和 root 开关。</p>
+<p>这种思路在许多 Android 设备上成立，但检查实车启动参数后发现：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">skip_initramfs<br>system 挂载为 /<br></code></pre></td></tr></table></figure>
+
+<p>也就是说，这台车机正常启动采用 system-as-root。正常系统的 init 配置来自 <code>system</code> 镜像根目录，而 <code>boot.img</code> 中的 ramdisk 实际是 Recovery 环境。</p>
+<p>继续解包 boot 后也验证了这一点：</p>
+<ul>
+<li>ramdisk 中存在 recovery 主程序</li>
+<li>使用独立的 recovery <code>adbd</code></li>
+<li>还包含 IOC 电源管理、最小 IPC 服务和 watchdog</li>
+<li>它们都属于恢复环境，不能按普通手机模板随意替换</li>
+</ul>
+<p>所以：</p>
+<p><code>只改 boot ramdisk，最多可能影响 Recovery，不能证明正常开机后会获得持久 root。</code></p>
+<p>持久化目标必须转到正常启动真正加载的 system init 配置，并同时处理 AVB 校验。</p>
+<hr>
+<h2 id="十一、持久化-Root-的设计目标"><a href="#十一、持久化-Root-的设计目标" class="headerlink" title="十一、持久化 Root 的设计目标"></a>十一、持久化 Root 的设计目标</h2><p>这里没有选择直接移植 Magisk 或安装通用 <code>su</code>，而是先定义一个更小的目标：</p>
+<blockquote>
+<p>正常冷启动后，当原车按自身配置启动 adbd 时，让 adbd 保持 UID 0；不强制开启 ADB，不改变现有网络方式，也不自动给第三方 App 授权。</p>
+</blockquote>
+<p>这样做的原因是：</p>
+<ul>
+<li>修改面更小</li>
+<li>更容易离线审计</li>
+<li>不需要替换原厂 <code>adbd</code></li>
+<li>不引入额外的通用提权管理器</li>
+<li>回滚时只需恢复匹配的系统与校验元数据</li>
+</ul>
+<p>原则上的启动流程为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">system init 进入 early-init<br>    ↓<br>写入设备专用调试 token<br>    ↓<br>设置 adbd root 启动标志<br>    ↓<br>原车按既有条件启动 adbd<br>    ↓<br>adbd 校验通过并保持 uid=0<br></code></pre></td></tr></table></figure>
+
+<p>具体属性名、token 和 init 片段在本文中省略。</p>
+<p>如果以后要把能力提供给氛围灯 App，更推荐在 root shell 之上增加一个最小权限 Broker：</p>
+<ul>
+<li>只允许经过签名白名单的 App 调用</li>
+<li>只提供灯光、日志等固定方法</li>
+<li>不接受任意 shell 字符串</li>
+<li>每次操作检查驻车状态和参数范围</li>
+<li>默认只监听本机 loopback</li>
+</ul>
+<p>这比让所有 App 都能执行 <code>su</code> 更适合车机环境。</p>
+<hr>
+<h2 id="十二、System-镜像与-AVB-的处理思路"><a href="#十二、System-镜像与-AVB-的处理思路" class="headerlink" title="十二、System 镜像与 AVB 的处理思路"></a>十二、System 镜像与 AVB 的处理思路</h2><p>正常启动使用 system 根目录后，候选方案只对一份匹配固件的 <code>system.img</code> 副本做最小修改：在现有 init 配置中增加 early-init 动作。</p>
+<p>修改时保持：</p>
+<ul>
+<li>原文件路径</li>
+<li>UID &#x2F; GID</li>
+<li>权限位</li>
+<li>SELinux 标签</li>
+<li>原有 ADB 开关和启动条件</li>
+<li>Boot、Recovery、内核、IOC 与车辆 MCU 不变</li>
+</ul>
+<p>离线构建结果中，2.5 GiB 的 system 镜像只有约 180 字节发生变化，主要来自新增 init 内容及文件长度字段。</p>
+<p>但文件系统本身正确，并不代表启动校验会接受它。</p>
+<p>顶层 <code>vbmeta</code> 同时描述了 boot、system、vendor 和可信执行环境等分区。system 内容一旦改变，原有 hashtree 和 FEC 就会过期。继续搭配原 enforcing <code>vbmeta</code>，可能导致拒绝挂载、重启或进入损坏处理。</p>
+<p>离线候选因此包含一份实验性 <code>vbmeta</code>：</p>
+<ul>
+<li>保留原分区 descriptor</li>
+<li>不伪造厂商签名</li>
+<li>明确标记为未签名实验产物</li>
+<li>关闭 hashtree 校验，而不是假装原签名仍然有效</li>
+</ul>
+<p>这条路线的代价也很明确：关闭的不只是 system 哈希树，vendor 的完整性保护也可能一并降低。即使 Bootloader 报告为解锁，也仍需实车确认 OEM 启动器是否接受这种组合。</p>
+<p>因此这份候选只能叫：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">OFFLINE_CHECKED_NOT_FLASH_READY<br></code></pre></td></tr></table></figure>
+
+<p>不能叫“可刷镜像”。</p>
+<hr>
+<h2 id="十三、离线候选做了哪些验证"><a href="#十三、离线候选做了哪些验证" class="headerlink" title="十三、离线候选做了哪些验证"></a>十三、离线候选做了哪些验证</h2><p>为避免“脚本跑完就算成功”，候选镜像做了多层检查：</p>
+<ol>
+<li>固定校验原始 system 与 vbmeta 的 SHA-256</li>
+<li>只在镜像副本中工作，不覆盖原件</li>
+<li>修改前后执行只读文件系统检查</li>
+<li>从候选镜像重新读回 init 文件</li>
+<li>核对权限、属主和 SELinux 标签</li>
+<li>对完整 2.5 GiB 镜像逐字节比较</li>
+<li>确认变化只落在预期配置块、inode 和长度字段</li>
+<li>独立解析新 vbmeta 的结构</li>
+<li>保存输入、输出散列和修改块清单</li>
+</ol>
+<p>最终确认：</p>
+<ul>
+<li>文件系统检查通过</li>
+<li>候选内容读回一致</li>
+<li>原件没有被修改</li>
+<li>system 实际变化约 180 字节</li>
+<li>Boot 和可信执行环境镜像未改动</li>
+</ul>
+<p>这些检查只能证明“候选按照设计生成”，不能证明 OEM Bootloader 会接受，也不能证明实车一定能启动。</p>
+<hr>
+<h2 id="十四、为什么目前仍然不能刷"><a href="#十四、为什么目前仍然不能刷" class="headerlink" title="十四、为什么目前仍然不能刷"></a>十四、为什么目前仍然不能刷</h2><p>这台车机没有可供用户直接操作的电源键和音量键，不能照搬手机常见的按键救砖流程。</p>
+<p>目前从 Bootloader 固件中找到了这些静态线索：</p>
+<ul>
+<li>USB Fastboot</li>
+<li>TCP Fastboot</li>
+<li>A&#x2F;B 槽位重试与回退</li>
+<li>IOC 参与的启动目标选择</li>
+<li>验证错误放行分支</li>
+<li>某些加载失败后进入 Fastboot 的路径</li>
+</ul>
+<p>这些线索增强了方案的可行性，但都没有达到“救援入口已经验证”的强度。</p>
+<p>仍然缺少的实车证据包括：</p>
+<ul>
+<li>Android 无法启动时，外部 USB Fastboot 是否仍可达</li>
+<li>具体哪个物理 USB 口连接到预启动控制器</li>
+<li>无实体按键时如何独立进入和退出恢复模式</li>
+<li>备用槽是否真的可启动</li>
+<li>自动回退的计数和触发条件</li>
+<li>OEM 是否接受实验性未签名 vbmeta</li>
+<li>如何从真实分区恢复原始 system 与 vbmeta</li>
+</ul>
+<p><code>adb reboot bootloader</code> 依赖一个仍然活着的 Android 系统，它不能证明设备变砖后仍有独立恢复入口。</p>
+<p>原厂升级包存在，也不能证明插入 U 盘就能在无法启动时自动恢复。升级入口、包验签、目标槽位、回滚限制和掉电恢复都需要单独确认。</p>
+<p>所以目前明确不提供直接刷写命令，也没有在实车上执行写分区操作。</p>
+<hr>
+<h2 id="十五、真正可接受的部署顺序"><a href="#十五、真正可接受的部署顺序" class="headerlink" title="十五、真正可接受的部署顺序"></a>十五、真正可接受的部署顺序</h2><p>如果以后继续实车验证，顺序必须是：</p>
+<h3 id="1-只读盘点"><a href="#1-只读盘点" class="headerlink" title="1. 只读盘点"></a>1. 只读盘点</h3><p>确认实际版本、启动参数、当前槽位、分区表、Verified Boot 状态和 Bootloader 策略。候选必须与实车当前固件完全匹配。</p>
+<h3 id="2-真实分区备份"><a href="#2-真实分区备份" class="headerlink" title="2. 真实分区备份"></a>2. 真实分区备份</h3><p>在临时 root 下只读备份 boot、system、vendor、vbmeta、可信执行环境和启动元数据，并核对设备端与主机端的长度和散列。</p>
+<p>OTA 原件只能作为参考，不能代替当前设备的逐分区备份。</p>
+<h3 id="3-独立救援验收"><a href="#3-独立救援验收" class="headerlink" title="3. 独立救援验收"></a>3. 独立救援验收</h3><p>必须先证明存在不依赖 Android 的恢复入口，包括 USB 枚举、Fastboot 可达性、进入&#x2F;退出方法和原始镜像恢复能力。</p>
+<h3 id="4-槽位与回滚验证"><a href="#4-槽位与回滚验证" class="headerlink" title="4. 槽位与回滚验证"></a>4. 槽位与回滚验证</h3><p>读取两套槽位的实际状态，不猜测备用槽，也不把“有 A&#x2F;B 分区”自动理解为“必然自动回退”。</p>
+<h3 id="5-受控部署"><a href="#5-受控部署" class="headerlink" title="5. 受控部署"></a>5. 受控部署</h3><p>只有前四项都有证据，才制定精确的写入和读回流程。system 与 vbmeta 必须作为匹配组合处理，保留一个已经验证可启动的原始路径。</p>
+<h3 id="6-冷启动与车辆功能验收"><a href="#6-冷启动与车辆功能验收" class="headerlink" title="6. 冷启动与车辆功能验收"></a>6. 冷启动与车辆功能验收</h3><p>验证完全断电后的再次启动、ADB 身份、原车设置、灯控、休眠唤醒、倒车显示和车辆通信。仅重启 <code>adbd</code> 不算持久化成功。</p>
+<hr>
+<h2 id="十六、最终希望形成的灯控架构"><a href="#十六、最终希望形成的灯控架构" class="headerlink" title="十六、最终希望形成的灯控架构"></a>十六、最终希望形成的灯控架构</h2><p>如果持久 root 和恢复链最终通过验证，最合理的灯控实现不是开放一个万能 root，而是建立受限链路：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs text">氛围灯 App<br>    ↓<br>签名白名单 Binder / Unix Socket<br>    ↓<br>最小权限 Root Broker<br>    ↓<br>原厂 VHAL 或 IPC 库<br>    ↓<br>只允许灯光记录的白名单<br>    ↓<br>IOC / 网关<br>    ↓<br>灯控 ECU<br></code></pre></td></tr></table></figure>
+
+<p>Broker 只暴露“设置亮度、设置受支持模式、读取状态”等固定接口，不提供任意命令执行。所有写操作都限制在：</p>
+<ul>
+<li>车辆驻车</li>
+<li>参数白名单</li>
+<li>单次发送</li>
+<li>可恢复默认值</li>
+<li>完整操作日志</li>
+</ul>
+<p>这样做仍然是在利用原车已有通信栈，由 <code>ipc_server</code> 处理 CRC、ACK、序号和重传，而不是绕过它直接向高速串口盲写。</p>
+<p>至于当前三色灯控 ECU 是否真的接受任意 RGB，仍然需要继续从 IOC 固件或外接 CAN&#x2F;LIN 被动采集中确认。Root 能帮助观察链路，但不能替代对真实硬件协议的验证。</p>
+<hr>
+<h2 id="十七、从调试后门得到的安全结论"><a href="#十七、从调试后门得到的安全结论" class="headerlink" title="十七、从调试后门得到的安全结论"></a>十七、从调试后门得到的安全结论</h2><h3 id="1-固定盐不是密钥"><a href="#1-固定盐不是密钥" class="headerlink" title="1. 固定盐不是密钥"></a>1. 固定盐不是密钥</h3><p>盐值和算法只要存在于可分发固件中，就应假设它们最终会被读取。把设备标识混入计算可以让结果逐设备变化，却不能把一套离线可复现的派生函数变成可靠认证。</p>
+<h3 id="2-维护入口进入量产固件后就是攻击面"><a href="#2-维护入口进入量产固件后就是攻击面" class="headerlink" title="2. 维护入口进入量产固件后就是攻击面"></a>2. 维护入口进入量产固件后就是攻击面</h3><p>无论它最初用于产线、售后还是研发，只要它能绕过正常授权并取得 root，就必须按后门能力评估。隐藏属性名、删除界面或不写文档，只会降低入口的可见度，不会缩小它成功触发后的权限。</p>
+<h3 id="3-利用需要前提，不代表风险可以忽略"><a href="#3-利用需要前提，不代表风险可以忽略" class="headerlink" title="3. 利用需要前提，不代表风险可以忽略"></a>3. 利用需要前提，不代表风险可以忽略</h3><p>当前证据支持的是可接触 ADB 或工程通道后的本地提权，不是无条件远程攻击。但车机可能进入维修、二手流转、第三方改装和非可信 USB 环境；一条稳定的 root 路径会把这些接触场景从普通调试风险提升为完整主机失陷。</p>
+<h3 id="4-多层宽松配置会产生叠加效应"><a href="#4-多层宽松配置会产生叠加效应" class="headerlink" title="4. 多层宽松配置会产生叠加效应"></a>4. 多层宽松配置会产生叠加效应</h3><p>SELinux Permissive、可调试构建、Bootloader 解锁和非绿色 Verified Boot 各自都有不同边界。它们与 root <code>adbd</code> 同时存在时，攻击者从提权、观察系统到研究持久化所遇到的阻力会显著降低。</p>
+<h3 id="5-Root-车机不等于接管整车"><a href="#5-Root-车机不等于接管整车" class="headerlink" title="5. Root 车机不等于接管整车"></a>5. Root 车机不等于接管整车</h3><p>独立 IOC、网关、总线协议和 ECU 校验仍然构成边界。没有证据时，不能把车机 root 直接描述成任意 CAN 注入或远程控车。但 root 已经足以暴露车辆服务、诊断接口和厂商 IPC，安全影响不能按普通娱乐终端看待。</p>
+<h3 id="6-持久化必须针对真实启动路径"><a href="#6-持久化必须针对真实启动路径" class="headerlink" title="6. 持久化必须针对真实启动路径"></a>6. 持久化必须针对真实启动路径</h3><p>看到 <code>boot.img</code> 里有 ramdisk，不代表正常启动会使用它。<code>skip_initramfs + system-as-root</code> 推翻了最初的 boot 补丁方案，也说明静态文件结构不能替代真实启动链证据。</p>
+<h3 id="7-防砖能力比持久化本身更重要"><a href="#7-防砖能力比持久化本身更重要" class="headerlink" title="7. 防砖能力比持久化本身更重要"></a>7. 防砖能力比持久化本身更重要</h3><p>没有独立恢复入口、真实备份和回滚证据，就算离线镜像已经通过检查，也不应该刷入没有实体恢复按键的车机。A&#x2F;B 只是机制，不是已经得到验证的保险。</p>
+<h3 id="8-只读调试也可能影响车辆功能"><a href="#8-只读调试也可能影响车辆功能" class="headerlink" title="8. 只读调试也可能影响车辆功能"></a>8. 只读调试也可能影响车辆功能</h3><p>ptrace 导致的短暂停顿足以触发车辆功能告警。对实时车辆服务做研究时，“没有写入数据”不等于“没有改变系统行为”。</p>
+<hr>
+<h2 id="十八、总结"><a href="#十八、总结" class="headerlink" title="十八、总结"></a>十八、总结</h2><p>这次分析确认了一条存在于量产固件中的厂商调试后门：<code>adbd</code> 根据设备标识和固件内固定盐计算 token，验证通过后可以切换到 root。它没有服务端 <code>challenge</code>，没有不可导出的设备密钥，也没有一次性或时效性约束。所谓设备专用凭据，只是使用同一套公开于固件中的规则，为每台设备算出不同结果。</p>
+<p>它的直接安全影响，是让能够接触 ADB 或工程通道的人绕过 Android 应用沙箱和正常授权流程，取得完整主机权限。root shell 可以读取受保护数据、控制系统服务、检查或调用厂商接口，并接近车辆服务与诊断通信链路。即使它尚未被证明能够远程触发，也足以让维修接触、二手流转、改装设备或非可信 USB 环境变成需要认真考虑的攻击场景。</p>
+<p>更大的问题在于风险并不局限于一台设备。只要同平台继续复用固定盐和派生算法，针对一份固件完成的逆向工作就可能迁移到同系列设备。token 的值逐设备变化，但攻击方法可以批量复用；这会把一个隐藏维护入口变成平台级问题。</p>
+<p>Bootloader 解锁、系统保留调试属性、SELinux Permissive 和非绿色 Verified Boot 又进一步放大了后门的价值。它们没有让所有安全机制彻底消失，AVB&#x2F;dm-verity 仍然阻止直接修改受保护分区，独立 IOC 和网关也仍是车机之外的边界；但在攻击者已经取得 root 的前提下，这些宽松配置显著降低了继续分析系统、干预运行状态和尝试持久化的成本。</p>
+<p>目前构造的持久化候选只完成了离线验证，不能直接刷写。它证明了利用 system-as-root 的 early-init 阶段恢复调试能力在技术上存在可行路径，同时也说明持久化会把一次临时提权升级为每次启动都存在的高权限入口。没有独立恢复、真实备份、A&#x2F;B 回退和 vbmeta 接受策略的实机证据，这一步不应继续。</p>
+<p>从防护角度看，最直接的修复不是更换哈希算法或把盐藏得更深，而是从量产版本中移除 root 调试分支。确有维护需求时，应使用带 <code>challenge</code> 的认证、不可导出的设备密钥、短时授权、显式用户或维修确认、操作审计，以及能够被撤销的权限设计。</p>
+<p>这不是一个“知道口令就能方便调试”的小功能，而是一条能够改变整台车机信任边界的遗留入口。远程可达性目前没有证据，但本地提权和完整主机权限已经在实车上验证成立。仅这一点，就足以把它当作需要修复的安全问题。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Android/" class="print-no-link">#Android</a>
+      
+        <a href="/tags/%E5%AE%89%E5%85%A8/" class="print-no-link">#安全</a>
+      
+        <a href="/tags/%E8%BD%A6%E6%9C%BA/" class="print-no-link">#车机</a>
+      
+        <a href="/tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" class="print-no-link">#逆向工程</a>
+      
+        <a href="/tags/Root/" class="print-no-link">#Root</a>
+      
+        <a href="/tags/%E8%B0%83%E8%AF%95%E5%90%8E%E9%97%A8/" class="print-no-link">#调试后门</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>量产车机里的调试后门：从固件逆向到 Root 持久化</div>
+      <div>http://example.com/2026/10/03/20261003-head-unit-firmware-root-persistence/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Caleb</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年10月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-cc-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-cc-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/10/03/20261003-codex-gpt-deepseek-workflow/" title="把 DeepSeek 接进 Codex：从双后端切换到“GPT 主控、DS 执行”">
+                        <span class="hidden-mobile">把 DeepSeek 接进 Codex：从双后端切换到“GPT 主控、DS 执行”</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> , © <span id="year"></span> Caleb <script>document.getElementById("year").textContent = new Date().getFullYear();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        StatTrak™ 
+        <span id="busuanzi_value_site_pv"></span>
+         
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        独立访客 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
